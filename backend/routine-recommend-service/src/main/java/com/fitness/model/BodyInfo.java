@@ -55,17 +55,18 @@ public class BodyInfo {
         this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
     }
     //모든 정보를 입력하는 생성자
-    public BodyInfo(long bodyID, long userID, double height, double weight, Enums.Gender gender, Enums.Goal goal, int preferredLevel, double bodyFat, double skeletalMuscleMass, Enums.DayOfWeek[] weeklyWorkoutDays, Enums.MuscleGroup avoidMuscleGroup) {
+    public BodyInfo(long bodyID, long userID, double height, double weight, Enums.Gender gender, Enums.Goal goal, Enums.DayOfWeek[] weeklyWorkoutDays, int preferredLevel, double bodyFat, double skeletalMuscleMass, Enums.MuscleGroup avoidMuscleGroup) {
         this.bodyID = bodyID;
         this.userID = userID;
         this.height = height;
         this.weight = weight;
         this.gender = gender;
         this.goal = goal;
+        this.weeklyWorkoutDays = (weeklyWorkoutDays == null || weeklyWorkoutDays.length == 0) ? new Enums.DayOfWeek[]{Enums.DayOfWeek.MONDAY, Enums.DayOfWeek.WEDNESDAY, Enums.DayOfWeek.FRIDAY} : weeklyWorkoutDays;
+
         this.preferredLevel = preferredLevel;
         this.bodyFat = (bodyFat <= 0) ? -1.0 : bodyFat;
         this.skeletalMuscleMass = (skeletalMuscleMass <= 0) ? -1.0 : skeletalMuscleMass;
-        this.weeklyWorkoutDays = (weeklyWorkoutDays == null || weeklyWorkoutDays.length == 0) ? new Enums.DayOfWeek[]{Enums.DayOfWeek.MONDAY, Enums.DayOfWeek.WEDNESDAY, Enums.DayOfWeek.FRIDAY} : weeklyWorkoutDays;
         this.avoidMuscleGroup = (avoidMuscleGroup == null) ? Enums.MuscleGroup.NONE : avoidMuscleGroup;
         //BMI 계산
         this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
