@@ -1,4 +1,4 @@
-package com.example.fitnessapp.entity;
+package com.fitness.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

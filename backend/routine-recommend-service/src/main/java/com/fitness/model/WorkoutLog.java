@@ -1,4 +1,4 @@
-package com.example.fitnessapp.entity;
+package com.fitness.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class WorkoutLog {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "exerciseID", referencedColumnName = "exerciseID")
+    @JoinColumn(name = "exerciseID", referencedColumnName = "exercise_id")
     private Exercise exercise;
 
     @Column(name = "date")
