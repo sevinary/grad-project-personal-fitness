@@ -38,7 +38,7 @@ public class RoutineRecommender {
         List<Exercise> aerobicExercises = new ArrayList<>();
         List<Exercise> stretchingExercises = new ArrayList<>();
         for (Exercise exercise : exerciseDatabase) {
-            if (bodyInfo.getBmi() > 25.0 && exercise.getDifficultyLevel() >= 3) {
+            if (bodyInfo.getBmi() > 25.0 && exercise.getDifficultyLevel() >= bodyInfo.getPreferredLevel()) {
                 continue; //BMI가 25 이상인 경우 고난이도 운동 제외
             }
             if (exercise.getExerciseType() == ExerciseType.STRETCHING) {

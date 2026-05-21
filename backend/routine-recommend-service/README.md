@@ -1,3 +1,33 @@
+#사용 테이블 및 속성#
+
+    -BodyInfo:
+        -bodyID
+        -userID
+        -height(bmi 계산)
+        -weight(bmi 계산)
+        -getnder(루틴 횟수 조절)
+        -goal(루틴 구성 결정)
+        -weeklyWorkoutDays(운동 요일 및 부위 결정)
+        
+        -preferredLevel(난이도 설정)
+        -bodyFat(난이도 조절)
+        -skeletalMuscleMass(난이도 조절)
+        -avoidMuscleGroup(루틴 구설 결정)
+        -bmi(난이도 최대치 설정)
+        -recommendedWeight(추천 중량**로그 생성시에 사용)
+
+    -Exercise:
+        -exerciseID
+        -name
+        -exerciseType(운동 목적, 기피 부위와의 비교 등)
+        -targetMuscleGroup(운동 부위 선택, 기피 부위 확인 등)
+        -difficultyLevel(운동 난이도)
+
+    -Routine:
+        -routineID
+        -goal(루틴 목적)
+        -exercises(루틴 구성 운동들)
+
 #코드 동작 방식#
 
     -BodyInfo 입력 -> BodyInfo와 Exercises 테이블의 데이터를 활용하여 루틴 생성
