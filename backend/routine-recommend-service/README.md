@@ -16,6 +16,7 @@
     -사용자의 난이도에 비해 지나치게 어렵거나 쉬운 운동도 필터링
 -루틴 생성 방식:
     -필터링 된 운동을 제외하고 구성에 맞춰 가중치에 따른 난수로 생성
+    -이미 동일한 userID의 루틴이 존재할 경우 기존 루틴을 삭제하고 생성
 -루틴 구성:
     -1번자리에는 스트레칭 고정
     -2,3번 자리는 목적에 따라 유산소, 무산소 조합
@@ -50,9 +51,21 @@
 
 #실제 API 명세 예시#
 
--입력 예시
+-입력용 링크
     -루틴 생성:
-        -Postman 링크 : http://localhost:8080/api/routines/recommend
+        -Postman 링크 : POST http://localhost:8080/api/routines/recommend-and-save
+    -루틴 조회:
+        -Postman 링크: GET http://localhost:8080/api/routines/recommend?userId={userID}
+    -로그 생성:
+        -Postman 링크: POST http://localhost:8080/api/workout-logs
+    -로그 삭제:
+        -Postman 링크: DELETE http://localhost:8080/api/workout-logs/101
+    -주간 로즈 조회:
+        GET http://localhost:8080/api/workout-logs/weekly/{userID}
+    -월간 로그 조회:
+        GET http://localhost:8080/api/workout-logs/monthly/{userID}
+
+    -입력 양식 예시
         -1.필수 정보만:
 {
   "bodyID": 1,
@@ -77,11 +90,7 @@
   "skeletalMuscleMass": 29.0,
   "avoidMuscleGroup": "SHOULDERS"
 }
-    -루틴 호출:
-        -Postman 링크: http://localhost:8080/api/routines/recommend?userId=101
-            -링크 주의사항: userId의 값에 따라 해당하는 유저의 현재 루틴이 출력됨.
-    -로그 생성:
-        -Postman 링크: http://localhost:8080/api/workout-logs
+    -로그 생성
 {
     "userID": 1,
     "exerciseID": 101,
@@ -90,10 +99,7 @@
     "reps": 12,
     "exerciseWeight": 50.5
 }
-    -로그 삭제:
-        -Postman 링크: http://localhost:8080/api/workout-logs/101
-            -링크 주의사항: userId의 값(마지막 숫자)에 원하는 
-
+    
 -postman 예시 결과 예시
     -1번
 {

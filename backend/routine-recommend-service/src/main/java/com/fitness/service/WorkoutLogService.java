@@ -6,6 +6,10 @@ import com.fitness.repository.WorkoutLogRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,4 +29,8 @@ public class WorkoutLogService {
     public void deleteLog(@NonNull Long logID){
         logRepository.deleteById(logID);
     }
+    public List<WorkoutLog> getLogsByDateRange(long userID,LocalDate start,LocalDate end){
+        return logRepository.findByUserIDAndWorkoutDateBetween(userID,start,end);
+    }
+
 }
