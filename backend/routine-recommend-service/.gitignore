@@ -1,0 +1,17 @@
+# Maven 빌드 결과물 (가장 중요)
+/target/
+
+# IDE 관련 파일 (IntelliJ 등)
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+
+# OS 관련 파일
+.DS_Store
+Thumbs.db
+
+# 로그 및 데이터베이스 파일
+*.log
+*.sqlite

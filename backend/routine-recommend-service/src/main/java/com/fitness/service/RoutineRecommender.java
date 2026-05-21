@@ -4,17 +4,17 @@ import com.fitness.model.*;
 import com.fitness.model.Enums.*;
 import com.fitness.repository.ExerciseRepository;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 //추천 루틴 생성 알고리즘
 @Service
 public class RoutineRecommender {
-    
+    private final ExerciseRepository exerciseRepository; //운동 데이터베이스에 접근하기 위한 레포지토리
+    public RoutineRecommender(ExerciseRepository exerciseRepository) {
+        this.exerciseRepository = exerciseRepository;
+    }
     //Exercise와 가중치 싸을 묶어주는 가벼운 내부클래스, 내림차순 자동 정렬 기능 포함
     static class ExerciseScore implements Comparable<ExerciseScore> {
         Exercise exercise;
@@ -199,10 +199,6 @@ public class RoutineRecommender {
                 count++;
             }
         }
-    }
-    private final ExerciseRepository exerciseRepository; //운동 데이터베이스에 접근하기 위한 레포지토리
-    public RoutineRecommender(ExerciseRepository exerciseRepository) {
-        this.exerciseRepository = exerciseRepository;
     }
     public WeeklyRoutinePlan generateRoutine(BodyInfo bodyInfo) {
         List<Exercise> exerciseDatabase = exerciseRepository.findAll(); //운동 데이터베이스에서 모든 운동 정보 가져오기
