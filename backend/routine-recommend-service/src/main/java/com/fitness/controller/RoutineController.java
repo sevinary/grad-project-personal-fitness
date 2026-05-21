@@ -6,7 +6,9 @@ import com.fitness.service.RoutineSave;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.lang.NonNull;;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.RequestParam;
+;
 @RestController
 @RequestMapping("/api/routines")
 public class RoutineController {
@@ -19,6 +21,11 @@ public class RoutineController {
         this.routineSave = routineSave;
     }
 
+    @GetMapping("/recommend")
+    public WeeklyRoutinePlan recommendRoutine(@RequestParam Long userId){
+        return routineSave.findByUserID(userId);
+    }
+    
     @PostMapping("/recommend")
     public WeeklyRoutinePlan generateRoutine(@RequestBody BodyInfo bodyInfo) {
         WeeklyRoutinePlan recommendedPlan = routineRecommender.generateRoutine(bodyInfo);

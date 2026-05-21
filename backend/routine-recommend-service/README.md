@@ -36,7 +36,6 @@
     -GET  /api/routines/{id} : 특정 루틴의 상세 내용을 조회
 -설치 및 실행 방법:
     -Spring Boot 프로젝트 내 routine-service 모듈을 포함하여 빌드하면 'src/main/resource/data.sql'을 통해 운동 데이터가 H2 데이터세이스에 자동으로 로드됩니다. 이후 Postman을 통해 테스트할 수 있습니다.
-    -Postman 링크 : http://localhost:8080/api/routines/recommend
     -h2 콘솔 접속 : http://localhost:8080/h2-console
     (테스트용이며 추후 MySQL로 변경 예정)
         -JDBC URL: 'jdbc:h2:mem:fitnessdb'
@@ -52,7 +51,8 @@
 #실제 API 명세 예시#
 
 -입력 예시
-    -BodyInfo:
+    -루틴 생성:
+        -Postman 링크 : http://localhost:8080/api/routines/recommend
         -1.필수 정보만:
 {
   "bodyID": 1,
@@ -77,6 +77,9 @@
   "skeletalMuscleMass": 29.0,
   "avoidMuscleGroup": "SHOULDERS"
 }
+    -루틴 호출:
+        -Postman 링크: http://localhost:8080/api/routines/recommend?userId=101
+            -링크 주의사항: userId의 값에 따라 해당하는 유저의 현재 루틴이 출력됨.
 
 -postman 예시 결과 예시
     -1번

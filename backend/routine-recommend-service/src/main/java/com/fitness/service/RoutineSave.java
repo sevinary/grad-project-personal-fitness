@@ -38,4 +38,7 @@ public class RoutineSave {
     public WeeklyRoutinePlan findById(@NonNull Long id) {
         return routineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다. ID: " + id));
     }
+    public WeeklyRoutinePlan findByUserID(long userID){
+        return routineRepository.findRoutineByUserID(userID).orElseThrow(() ->new IllegalArgumentException("해당 유저의 루틴을 찾을 수 없습니다." + userID));
+    }
 }
