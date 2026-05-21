@@ -4,6 +4,8 @@ import com.fitness.model.WorkoutLog;
 import com.fitness.model.WorkoutLog.WorkoutLogRequest;
 import com.fitness.repository.WorkoutLogRepository;
 
+import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,5 +19,10 @@ public class WorkoutLogService {
     public WorkoutLog saveLog(WorkoutLogRequest request){
         WorkoutLog log = new WorkoutLog(request.userID(), request.exerciseID(),request.workoutDate(),request.sets(),request.reps(),request.exerciseWeight());
         return logRepository.save(log);
+    }
+
+    @Transactional
+    public void deleteLog(@NonNull Long logID){
+        logRepository.deleteById(logID);
     }
 }

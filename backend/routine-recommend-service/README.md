@@ -80,6 +80,19 @@
     -루틴 호출:
         -Postman 링크: http://localhost:8080/api/routines/recommend?userId=101
             -링크 주의사항: userId의 값에 따라 해당하는 유저의 현재 루틴이 출력됨.
+    -로그 생성:
+        -Postman 링크: http://localhost:8080/api/workout-logs
+{
+    "userID": 1,
+    "exerciseID": 101,
+    "workoutDate": "2026-05-21",
+    "sets": 3,
+    "reps": 12,
+    "exerciseWeight": 50.5
+}
+    -로그 삭제:
+        -Postman 링크: http://localhost:8080/api/workout-logs/101
+            -링크 주의사항: userId의 값(마지막 숫자)에 원하는 
 
 -postman 예시 결과 예시
     -1번

@@ -1,17 +1,23 @@
 package com.fitness.controller;
 
-import com.fitness.model.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fitness.model.BodyInfo;
+import com.fitness.model.WeeklyRoutinePlan;
+import com.fitness.model.WeeklyRoutineResponse;
+import com.fitness.model.WorkoutLog;
 import com.fitness.service.RoutineRecommender;
 import com.fitness.service.RoutineSave;
 import com.fitness.service.WorkoutLogService;
-
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api")
@@ -62,8 +68,13 @@ public class RoutineController {
         return new WeeklyRoutineResponse(plan);
     }
     @PostMapping("/workout-logs")
-    public ResponseEntity<WorkoutLog> saveWorkoutLog(@RequestBody WorkoutLog.WorkoutLogRequest request){
+    public ResponseEntity<WorkoutLog.WorkoutLogResponse> saveWorkoutLog(@RequestBody WorkoutLog.WorkoutLogRequest request){
         WorkoutLog savedLog = workoutLogService.saveLog(request);
-        return ResponseEntity.ok(savedLog);
+        return ResponseEntity.ok(new WorkoutLog.WorkoutLogResponse(savedLog));
+    }
+    @DeleteMapping("/workout-logs/{logID}")
+    public ResponseEntity<Void> deleteLog(@PathVariable("logID") long logID){
+        workoutLogService.deleteLog(logID);
+        return ResponseEntity.noContent().build();
     }
 }
