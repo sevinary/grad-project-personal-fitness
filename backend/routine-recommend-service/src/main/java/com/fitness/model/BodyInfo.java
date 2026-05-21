@@ -32,6 +32,7 @@ public class BodyInfo {
     private Enums.MuscleGroup avoidMuscleGroup;    //피하고 싶은 근육 부위
     //기타 정보
     private double bmi; //체질량 지수 (BMI)
+    private double recommendedWeight;
 
     protected BodyInfo() {} //JPA를 위한 기본 생성자
 
@@ -53,6 +54,7 @@ public class BodyInfo {
         this.avoidMuscleGroup = Enums.MuscleGroup.NONE;
         //BMI 계산
         this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
+        this.recommendedWeight = weight * 0.4;
     }
     //모든 정보를 입력하는 생성자
     public BodyInfo(long bodyID, long userID, double height, double weight, Enums.Gender gender, Enums.Goal goal, Enums.DayOfWeek[] weeklyWorkoutDays, int preferredLevel, double bodyFat, double skeletalMuscleMass, Enums.MuscleGroup avoidMuscleGroup) {
@@ -70,6 +72,7 @@ public class BodyInfo {
         this.avoidMuscleGroup = (avoidMuscleGroup == null) ? Enums.MuscleGroup.NONE : avoidMuscleGroup;
         //BMI 계산
         this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
+        this.recommendedWeight = weight * 0.4;
     }
 
     //getter, setter 메서드
@@ -78,11 +81,12 @@ public class BodyInfo {
     public double getHeight(){return height;}
     public void setHeight(double height){this.height = height; this.updateBmi();}
     public double getWeight(){return weight;}
-    public void setWeight(double weight){this.weight = weight; this.updateBmi();}
+    public void setWeight(double weight){this.weight = weight; this.updateBmi(); this.updateRecommendedWeight();}
     public Enums.Goal getGoal(){return goal;}
     public void setGoal(Enums.Goal goal){this.goal = goal;}
     public Enums.Gender getGender(){return gender;}
     public double getBmi(){return bmi;}
+    public double getRecommendedWeight(){return recommendedWeight;}
     public int getPreferredLevel(){return preferredLevel;}
     public void setPreferredLevel(int preferredLevel){this.preferredLevel = preferredLevel;}
 
@@ -100,5 +104,8 @@ public class BodyInfo {
     //BMI 업데이트 메서드
     private void updateBmi() {
         this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
+    }
+    private void updateRecommendedWeight(){
+        this.recommendedWeight = weight * 0.4;
     }
 }

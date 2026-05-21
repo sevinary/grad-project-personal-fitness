@@ -3,7 +3,7 @@ package com.fitness.model;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.Setter;
+import lombok.*;
 import java.util.ArrayList;
 
 //주간 루틴 정보를 나타내는 클래스
@@ -16,6 +16,8 @@ public class WeeklyRoutinePlan{
     
     private long weeklyPlanID; //고유 번호
     private long userID; //회원 고유 번호
+
+    private double recommendedWeight;
     @OneToMany(mappedBy = "weeklyRoutinePlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DailyRoutine> weeklyRoutines = new ArrayList<>(); //주간 루틴 목록
 
@@ -29,6 +31,12 @@ public class WeeklyRoutinePlan{
         this.weeklyPlanID = weeklyPlanID;
         this.userID = userID;
         this.weeklyRoutines = weeklyRoutines;
+    }
+    public void setRecommendedWeight(double recommendedWeight){
+        this.recommendedWeight = recommendedWeight;
+    }
+    public double getRecommendedWeight(){
+        return recommendedWeight;
     }
     public List<DailyRoutine> getWeeklyRoutines() {
         return this.weeklyRoutines;

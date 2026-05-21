@@ -202,6 +202,8 @@ public class RoutineRecommender {
     }
     public WeeklyRoutinePlan generateRoutine(BodyInfo bodyInfo) {
         List<Exercise> exerciseDatabase = exerciseRepository.findAll(); //운동 데이터베이스에서 모든 운동 정보 가져오기
-        return recommendRoutine(bodyInfo, exerciseDatabase); //추천 루틴 생성 메서드 호출
+        WeeklyRoutinePlan plan = recommendRoutine(bodyInfo, exerciseDatabase);
+        plan.setRecommendedWeight(bodyInfo.getRecommendedWeight());
+        return plan; //추천 루틴 생성 메서드 호출
     }
 }
