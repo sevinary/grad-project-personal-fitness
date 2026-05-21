@@ -1,8 +1,6 @@
 package com.fitness.controller;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fitness.dto.DashboardSummaryResponse;
 import com.fitness.model.BodyInfo;
 import com.fitness.model.WeeklyRoutinePlan;
 import com.fitness.model.WorkoutLog;
 import com.fitness.service.RoutineRecommender;
 import com.fitness.service.RoutineSave;
 import com.fitness.service.WorkoutLogService;
+
 
 @RestController
 @RequestMapping("/api")
@@ -57,21 +57,17 @@ public class RoutineController {
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/workout-logs/weekly/{userID}")
-    public ResponseEntity<List<WorkoutLog.WorkoutLogResponse>> getWeeklyLogs(@PathVariable long userID){
+    public ResponseEntity<DashboardSummaryResponse> getWeeklyLogs(@PathVariable long userID){
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusDays(7);
-        List<WorkoutLog>logs = workoutLogService.getLogsByDateRange(userID,start,end);
-        List<WorkoutLog.WorkoutLogResponse> response = logs.stream().map(WorkoutLog.WorkoutLogResponse::new).collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
+        DashboardSummaryResponse dashboard = workoutLogService.getDashboardData(userID, start, end);
+        return ResponseEntity.ok(dashboard);
     }
     @GetMapping("/workout-logs/monthly/{userID}")
-    public ResponseEntity<List<WorkoutLog.WorkoutLogResponse>> getMonthlyLogs(@PathVariable long userID){
+    public ResponseEntity<DashboardSummaryResponse> getMonthlyLogs(@PathVariable long userID){
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusDays(30);
-        List<WorkoutLog>logs = workoutLogService.getLogsByDateRange(userID,start,end);
-        List<WorkoutLog.WorkoutLogResponse> response = logs.stream().map(WorkoutLog.WorkoutLogResponse::new).collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
+        DashboardSummaryResponse dashboard = workoutLogService.getDashboardData(userID, start, end);
+        return ResponseEntity.ok(dashboard);
     }
 }
