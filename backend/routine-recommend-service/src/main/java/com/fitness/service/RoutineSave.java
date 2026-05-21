@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 
 import com.fitness.model.DailyRoutine;
 import org.springframework.stereotype.Service;
+import org.springframework.lang.NonNull;
 
 @Service
 public class RoutineSave {
@@ -34,7 +35,7 @@ public class RoutineSave {
         }
         return routineRepository.save(weeklyRoutinePlan);
     }
-    public WeeklyRoutinePlan findById(Long id) {
+    public WeeklyRoutinePlan findById(@NonNull Long id) {
         return routineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다. ID: " + id));
     }
 }

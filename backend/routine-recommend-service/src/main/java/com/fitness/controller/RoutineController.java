@@ -6,7 +6,7 @@ import com.fitness.service.RoutineSave;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.lang.NonNull;;
 @RestController
 @RequestMapping("/api/routines")
 public class RoutineController {
@@ -44,7 +44,7 @@ public class RoutineController {
     }
 
     @GetMapping("/{id}")
-    public WeeklyRoutineResponse getRoutineDetail(@PathVariable Long id) {
+    public WeeklyRoutineResponse getRoutineDetail(@PathVariable @NonNull Long id) {
         WeeklyRoutinePlan plan = routineSave.findById(id);
         return new WeeklyRoutineResponse(plan);
     }
