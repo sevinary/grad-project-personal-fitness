@@ -23,6 +23,7 @@ out/
 .springBeans
 .sts4-cache
 bin/
+.cursor/
 # OS
 .DS_Store
 Thumbs.db

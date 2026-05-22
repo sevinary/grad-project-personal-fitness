@@ -1,4 +1,4 @@
-package com.example.fitnessapp.entity;
+package com.fitness.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,8 +17,13 @@ public class User {
     @Column(name = "userID")
     private Long userId;
 
+    @Column(unique = true, nullable = false)
+    private String username;
+
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "created_date")
