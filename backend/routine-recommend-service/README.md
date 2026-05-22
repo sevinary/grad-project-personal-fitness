@@ -1,3 +1,33 @@
+#사용 테이블 및 속성#
+
+    -BodyInfo:
+        -bodyID
+        -userID
+        -height(bmi 계산)
+        -weight(bmi 계산)
+        -getnder(루틴 횟수 조절)
+        -goal(루틴 구성 결정)
+        -weeklyWorkoutDays(운동 요일 및 부위 결정)
+        
+        -preferredLevel(난이도 설정)
+        -bodyFat(난이도 조절)
+        -skeletalMuscleMass(난이도 조절)
+        -avoidMuscleGroup(루틴 구설 결정)
+        -bmi(난이도 최대치 설정)
+        -recommendedWeight(추천 중량**로그 생성시에 사용)
+
+    -Exercise:
+        -exerciseID
+        -name
+        -exerciseType(운동 목적, 기피 부위와의 비교 등)
+        -targetMuscleGroup(운동 부위 선택, 기피 부위 확인 등)
+        -difficultyLevel(운동 난이도)
+
+    -Routine:
+        -routineID
+        -goal(루틴 목적)
+        -exercises(루틴 구성 운동들)
+
 #코드 동작 방식#
 
     -BodyInfo 입력 -> BodyInfo와 Exercises 테이블의 데이터를 활용하여 루틴 생성
@@ -16,6 +46,7 @@
     -사용자의 난이도에 비해 지나치게 어렵거나 쉬운 운동도 필터링
 -루틴 생성 방식:
     -필터링 된 운동을 제외하고 구성에 맞춰 가중치에 따른 난수로 생성
+    -이미 동일한 userID의 루틴이 존재할 경우 기존 루틴을 삭제하고 생성
 -루틴 구성:
     -1번자리에는 스트레칭 고정
     -2,3번 자리는 목적에 따라 유산소, 무산소 조합
@@ -27,32 +58,44 @@
         -3000번대 : 스트레칭
     -현재 총 30종의 운동 종목 준비
 
+#로그 및 대시보드#
+
+    -사용자는 운동번호, 날짜, 세트수, 반복횟수, 무게를 입력하여 로그를 기록할 수 있습니다.
+    -기록된 로그는 개별적인 로그ID를 가지며 이를 통한 개별 삭제가 가능합니다.
+    -로그들은 주간, 월간 대시보드를 통해 확인할 수 있습니다.
+    -대시보드는 해당 기간 동안의 로그기록 전체를 출력한 다음 기간 내의 총 운동일과 유형 별 운동 부하를 출력합니다.
+
+#추가 예정 기능#
+
+    -특정 운동 고정 또는 특정 운동만 변경
+
 #사용 예시#
 
--각종 기능
-    -POST /api/routine/recommend-and-save : recommend와 save를 호출
-    -POST /api/routines/recommend : BodyInfo를 기반으로 루틴을 생성
-    -POST /api/routines/save : 생성된 루틴을 테이블에 저장
-    -GET  /api/routines/{id} : 특정 루틴의 상세 내용을 조회
 -설치 및 실행 방법:
     -Spring Boot 프로젝트 내 routine-service 모듈을 포함하여 빌드하면 'src/main/resource/data.sql'을 통해 운동 데이터가 H2 데이터세이스에 자동으로 로드됩니다. 이후 Postman을 통해 테스트할 수 있습니다.
-    -Postman 링크 : http://localhost:8080/api/routines/recommend
     -h2 콘솔 접속 : http://localhost:8080/h2-console
     (테스트용이며 추후 MySQL로 변경 예정)
         -JDBC URL: 'jdbc:h2:mem:fitnessdb'
         -User: 'sa'
         -Password : (없음)
 
-#추가 예정 기능#
-    -입력값 예외 처리
-    -일일 루틴 체크
-    -특정 운동 고정 또는 특정 운동만 변경
-    -에러 핸들링 기록 조회
-
 #실제 API 명세 예시#
 
--입력 예시
-    -BodyInfo:
+-입력용 링크
+    -루틴 생성:
+        -Postman 링크 : POST http://localhost:8080/api/routines/recommend-and-save
+    -루틴 조회:
+        -Postman 링크: GET http://localhost:8080/api/routines/recommend?userId={userID}
+    -로그 생성:
+        -Postman 링크: POST http://localhost:8080/api/workout-logs
+    -로그 삭제:
+        -Postman 링크: DELETE http://localhost:8080/api/workout-logs/101
+    -주간 대시보드 조회:
+        -Postman 링크: GET http://localhost:8080/api/workout-logs/weekly/{userID}
+    -월간 대시보드 조회:
+        -Postman 링크: GET http://localhost:8080/api/workout-logs/monthly/{userID}
+
+    -입력 양식 예시
         -1.필수 정보만:
 {
   "bodyID": 1,
@@ -77,7 +120,16 @@
   "skeletalMuscleMass": 29.0,
   "avoidMuscleGroup": "SHOULDERS"
 }
-
+    -로그 생성
+{
+    "userID": 1,
+    "exerciseID": 1001,
+    "workoutDate": "2026-05-21",
+    "sets": 3,
+    "reps": 12,
+    "exerciseWeight": 50.5
+}
+    
 -postman 예시 결과 예시
     -1번
 {

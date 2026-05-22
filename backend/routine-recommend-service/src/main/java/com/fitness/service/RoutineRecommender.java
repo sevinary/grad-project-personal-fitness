@@ -38,7 +38,7 @@ public class RoutineRecommender {
         List<Exercise> aerobicExercises = new ArrayList<>();
         List<Exercise> stretchingExercises = new ArrayList<>();
         for (Exercise exercise : exerciseDatabase) {
-            if (bodyInfo.getBmi() > 25.0 && exercise.getDifficultyLevel() >= 3) {
+            if (bodyInfo.getBmi() > 25.0 && exercise.getDifficultyLevel() >= bodyInfo.getPreferredLevel()) {
                 continue; //BMI가 25 이상인 경우 고난이도 운동 제외
             }
             if (exercise.getExerciseType() == ExerciseType.STRETCHING) {
@@ -202,6 +202,8 @@ public class RoutineRecommender {
     }
     public WeeklyRoutinePlan generateRoutine(BodyInfo bodyInfo) {
         List<Exercise> exerciseDatabase = exerciseRepository.findAll(); //운동 데이터베이스에서 모든 운동 정보 가져오기
-        return recommendRoutine(bodyInfo, exerciseDatabase); //추천 루틴 생성 메서드 호출
+        WeeklyRoutinePlan plan = recommendRoutine(bodyInfo, exerciseDatabase);
+        plan.setRecommendedWeight(bodyInfo.getRecommendedWeight());
+        return plan; //추천 루틴 생성 메서드 호출
     }
 }
