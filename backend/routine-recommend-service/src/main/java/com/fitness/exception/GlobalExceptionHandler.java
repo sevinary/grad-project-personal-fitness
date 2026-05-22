@@ -22,14 +22,14 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getCode(), ex.getMessage()));
     }
 
+    // [수정] 아래 두 메소드를 하나로 통합했습니다.
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error("INVALID_REQUEST", message));
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        // 상세 에러 내용을 Map으로 반환하고 싶다면 이 방식을 사용하세요.
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> 
+            errors.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -39,21 +39,11 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("INVALID_REQUEST", "잘못된 요청 형식입니다."));
     }
 
+    // [수정] 일반 예외 처리도 하나로 통합했습니다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다."));
-    }
-  
-   @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String,String>> handleValidationExceptions(MethodArgumentNotValidException ex){
-        Map<String,String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error->errors.put(error.getField(),error.getDefaultMessage()));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다: " + e.getMessage());
+                .body(ApiResponse.error("INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다: " + ex.getMessage()));
     }
 }

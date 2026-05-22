@@ -8,11 +8,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.fitness.dto.DashboardSummaryResponse;
-import com.fitness.model.WorkoutLog;
-import com.fitness.model.WorkoutLog.DashboardResponse;
-import com.fitness.repository.WorkoutLogRepository;
 import com.fitness.model.Exercise;
+import com.fitness.model.WorkoutLog;
 import com.fitness.repository.ExerciseRepository;
+import com.fitness.repository.WorkoutLogRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
