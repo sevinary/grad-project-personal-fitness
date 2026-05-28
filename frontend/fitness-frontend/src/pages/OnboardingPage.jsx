@@ -41,14 +41,13 @@ export default function OnboardingPage() {
     setError('')
     try {
       const payload = {
-        height: parseFloat(form.height),
-        weight: parseFloat(form.weight),
-        age: parseInt(form.age),
-        goal: form.goal,
-        weeklyGoal: parseInt(form.weeklyGoal),
-        bodyFat: form.hasInbody ? parseFloat(form.bodyFat) : null,
-        muscleMass: form.hasInbody ? parseFloat(form.muscleMass) : null,
-      }
+    height: parseFloat(form.height),
+    weight: parseFloat(form.weight),
+    weeklyGoalCount: parseInt(form.weeklyGoal),  // weeklyGoal → weeklyGoalCount
+    goal: form.goal,
+    bodyFatRate: form.hasInbody ? parseFloat(form.bodyFat) : null,  // bodyFat → bodyFatRate
+    muscleMass: form.hasInbody ? parseFloat(form.muscleMass) : null,
+    }
       await axiosInstance.post('/body-info', payload)
       navigate('/home')
     } catch (err) {
@@ -184,11 +183,11 @@ function getBmiLabel(bmi) {
 
 // ─── 스텝 2: 운동 목표 ───
 function StepGoal({ form, update }) {
-  const goals = [
-    { value: 'diet', icon: '🔥', label: '체중 감량/다이어트', desc: '유산소 위주 루틴 추천' },
-    { value: 'muscle', icon: '💪', label: '근력 향상', desc: '근력 운동 위주 루틴 추천' },
-    { value: 'fitness', icon: '🏃', label: '기초체력 향상', desc: '전신 균형 루틴 추천' },
-  ]
+const goals = [
+  { value: 'DIET', icon: '🔥', label: '체중 감량/다이어트', desc: '유산소 위주 루틴 추천' },
+  { value: 'MUSCLE', icon: '💪', label: '근력 향상', desc: '근력 운동 위주 루틴 추천' },
+  { value: 'MAINTAIN', icon: '🏃', label: '기초체력 향상', desc: '전신 균형 루틴 추천' },
+]
   return (
     <div>
       <h2 style={{ fontWeight: 700, fontSize: '20px', marginBottom: '6px' }}>운동 목표가 무엇인가요?</h2>

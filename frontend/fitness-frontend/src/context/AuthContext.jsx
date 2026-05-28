@@ -17,14 +17,14 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const login = async (email, password) => {
-    const response = await axiosInstance.post('/auth/login', { email, password })
-    const { token, user: userData } = response.data
-    localStorage.setItem('token', token)
-    localStorage.setItem('user', JSON.stringify(userData))
-    setUser(userData)
-    return response.data
-  }
+  const login = async (username, password) => {
+  const response = await axiosInstance.post('/auth/login', { username, password })
+  const { accessToken, userId, username: userName } = response.data.data
+  localStorage.setItem('token', accessToken)
+  localStorage.setItem('user', JSON.stringify({ userId, username: userName }))
+  setUser({ userId, username: userName })
+  return response.data.data
+}
 
   const signup = async (email, password, username) => {
     const response = await axiosInstance.post('/auth/signup', { email, password, username })

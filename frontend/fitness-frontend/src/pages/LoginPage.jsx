@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+ const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -15,7 +15,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      const data = await login(email, password)
+      const data = await login(username, password)
       // 신체정보가 없으면 온보딩으로, 있으면 홈으로
       if (data.needsOnboarding) {
         navigate('/onboarding')
@@ -53,16 +53,16 @@ export default function LoginPage() {
         <div className="card">
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label className="label">이메일</label>
+              <label className="label">아이디(사용자명)</label>
               <input
                 className="input"
-                type="email"
-                placeholder="example@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="사용자명을 입력하세요"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-              />
-            </div>
+                />
+              </div>
             <div>
               <label className="label">비밀번호</label>
               <input
