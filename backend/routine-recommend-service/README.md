@@ -83,17 +83,17 @@
 
 -입력용 링크
     -루틴 생성:
-        -Postman 링크 : POST http://localhost:8080/api/routines/recommend-and-save
+        -Postman 링크 : POST http://localhost:8080/routines/recommend-and-save
     -루틴 조회:
-        -Postman 링크: GET http://localhost:8080/api/routines/recommend?userId={userID}
+        -Postman 링크: GET http://localhost:8080/routines/recommend?userId={userID}
     -로그 생성:
-        -Postman 링크: POST http://localhost:8080/api/workout-logs
+        -Postman 링크: POST http://localhost:8080/workout-logs
     -로그 삭제:
-        -Postman 링크: DELETE http://localhost:8080/api/workout-logs/101
+        -Postman 링크: DELETE http://localhost:8080/workout-logs/101
     -주간 대시보드 조회:
-        -Postman 링크: GET http://localhost:8080/api/workout-logs/weekly/{userID}
+        -Postman 링크: GET http://localhost:8080/workout-logs/weekly/{userID}
     -월간 대시보드 조회:
-        -Postman 링크: GET http://localhost:8080/api/workout-logs/monthly/{userID}
+        -Postman 링크: GET http://localhost:8080/workout-logs/monthly/{userID}
 
     -입력 양식 예시
         -1.필수 정보만:

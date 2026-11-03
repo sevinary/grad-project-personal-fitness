@@ -22,7 +22,6 @@ import com.fitness.service.WorkoutLogService;
 
 
 @RestController
-@RequestMapping("/api")
 public class RoutineController {
 
     private final RoutineRecommender routineRecommender;
