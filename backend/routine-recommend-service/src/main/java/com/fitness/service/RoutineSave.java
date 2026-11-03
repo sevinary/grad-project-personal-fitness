@@ -10,6 +10,8 @@ import com.fitness.model.DailyRoutine;
 import org.springframework.stereotype.Service;
 import org.springframework.lang.NonNull;
 
+import com.fitness.exception.AppException;
+
 @Service
 public class RoutineSave {
     
@@ -36,9 +38,9 @@ public class RoutineSave {
         return routineRepository.save(weeklyRoutinePlan);
     }
     public WeeklyRoutinePlan findById(@NonNull Long id) {
-        return routineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다. ID: " + id));
+        return routineRepository.findById(id).orElseThrow(() -> AppException.notFound("루틴을 찾을 수 없습니다. ID: " + id));
     }
     public WeeklyRoutinePlan findByUserID(long userID){
-        return routineRepository.findRoutineByUserID(userID).orElseThrow(() ->new IllegalArgumentException("해당 유저의 루틴을 찾을 수 없습니다." + userID));
+        return routineRepository.findRoutineByUserID(userID).orElseThrow(() -> AppException.notFound("해당 사용자의 루틴을 찾을 수 없습니다. userID: " + userID));
     }
 }

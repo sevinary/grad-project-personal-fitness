@@ -1,18 +1,33 @@
 #사용 테이블 및 속성#
 
+    -UserBodyInfo:
+        -bodyInfoId
+        -userId
+        -gender
+        -height
+        -weight
+        -bodyFatRate
+        -muscleMass
+        -goal
+        -preferredLevel
+        -avoidMuscleGroup
+        -weeklyGoalCount
+        -createdAt
+        -updatedAt
+
     -BodyInfo:
         -bodyID
         -userID
         -height(bmi 계산)
         -weight(bmi 계산)
-        -getnder(루틴 횟수 조절)
+        -gender(루틴 횟수 조절)
         -goal(루틴 구성 결정)
         -weeklyWorkoutDays(운동 요일 및 부위 결정)
         
         -preferredLevel(난이도 설정)
         -bodyFat(난이도 조절)
         -skeletalMuscleMass(난이도 조절)
-        -avoidMuscleGroup(루틴 구설 결정)
+        -avoidMuscleGroup(루틴 구성 결정)
         -bmi(난이도 최대치 설정)
         -recommendedWeight(추천 중량**로그 생성시에 사용)
 
@@ -30,12 +45,21 @@
 
 #코드 동작 방식#
 
-    -BodyInfo 입력 -> BodyInfo와 Exercises 테이블의 데이터를 활용하여 루틴 생성
+    -BodyInfo 입력 -> 입력된 정보 저장
+    -> 저장된 userBodyInfo를 BodyInfo 형식으로 변환
+    -> BodyInfo와 Exercises 테이블의 데이터를 활용하여 루틴 생성
     -> 생성한 루틴을 서버에 저장
+    -신체 정보 저장과 루틴 생성 및 저장은 하나의 트랜잭션으로 처리
     -저장된 루틴은 userID가 동일한 새로운 루틴이 생성될 경우 덮어씌워짐
 
 #가중치 계산 및 루틴 생성 알고리즘 규칙#
 
+-기본 입력값 처리:
+    -성별 미입력 시 FEMALE 적용
+    -운동 난이도 미입력 시 2 적용
+    -회피 근육 그룹 미입력 시 NONE 적용
+    -사용자가 값을 입력할 경우 해당 입력값 우선 적용
+    -인바디 정보가 입력되지 않은 경우 체지방률 및 골격근량 -1.0 적용
 -난이도 결정 방식:
     -기본 난이도 : 사용자 입력
     -골격근량 <30.0 -> 난이도 1단계 하향
@@ -82,7 +106,7 @@
 #실제 API 명세 예시#
 
 -입력용 링크
-    -루틴 생성:
+    -루틴 생성(수동):
         -Postman 링크 : POST http://localhost:8080/routines/recommend-and-save
     -루틴 조회:
         -Postman 링크: GET http://localhost:8080/routines/recommend?userId={userID}
@@ -98,28 +122,53 @@
     -입력 양식 예시
         -1.필수 정보만:
 {
-  "bodyID": 1,
-  "userID": 1,
   "height": 178.0,
   "weight": 75.0,
-  "gender": "MALE",
-  "goal":"MUSCLE_GAIN",
-  "weeklyWorkoutDays": ["MONDAY", "WEDNESDAY", "FRIDAY"]
+  "goal":"MUSCLE",
+  "weeklyGoalCount":3
 }
-        -2.선택 정보 포함:
+        -2.인바디 정보 포함:
 {
-  "bodyID": 1,
-  "userID": 1,
   "height": 178.0,
   "weight": 80.0,
-  "gender": "MALE",
-  "goal": "MUSCLE_GAIN",
-  "weeklyWorkoutDays": ["MONDAY", "WEDNESDAY", "FRIDAY"],
-  "preferredLevel": 3,
-  "bodyFat": 27.5,
-  "skeletalMuscleMass": 29.0,
-  "avoidMuscleGroup": "SHOULDERS"
+  "goal": "MUSCLE",
+  "weeklyGoalCount": 3,
+  "bodyFatRate": 27.5,
+  "muscleMass": 29.0
 }
+        -3.선택 정보 전체 입력:
+{
+  "height": 178.0,
+  "weight": 80.0,
+  "goal": "MUSCLE",
+  "weeklyGoalCount": 3,
+  "bodyFatRate": 27.5,
+  "muscleMass": 29.0,
+  "gender":"FEMALE",
+  "preferredLevel":3,
+  "avoidMuscleGroup":"SHOULDERS"
+}
+        -선택 정보 기본값:
+            -gender: FEMALE
+            -preferredLevel: 2
+            -avoidMuscleGroup: NONE
+        -goal 입력 가능 값:
+            -DIET
+            -MUSCLE
+            -MAINTAIN
+        -gender 입력 가능 값:
+            -MALE
+            -FEMALE
+        -avoidMuscleGroup 입력 가능 값:
+            -NONE
+            -ARMS
+            -LEGS
+            -BACK
+            -CHEST
+            -SHOULDERS
+        -weeklyGoalCount 입력 가능 값:
+            -1~5
+
     -로그 생성
 {
     "userID": 1,

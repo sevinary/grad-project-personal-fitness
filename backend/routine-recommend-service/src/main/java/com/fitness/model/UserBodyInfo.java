@@ -21,6 +21,9 @@ public class UserBodyInfo {
     @Column(nullable = false)
     private Long userId;
 
+    @Enumerated(EnumType.STRING)
+    private Enums.Gender gender;
+
     @Column(nullable = false)
     private Float height;
 
@@ -34,6 +37,10 @@ public class UserBodyInfo {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WorkoutGoal goal;
+    private Integer preferredLevel;
+
+    @Enumerated (EnumType.STRING)
+    private Enums.MuscleGroup avoidMuscleGroup;
 
     @Column(nullable = false)
     private Integer weeklyGoalCount;
