@@ -2,6 +2,7 @@ package com.fitness.dto;
 
 import com.fitness.model.UserBodyInfo.WorkoutGoal;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +26,6 @@ public class BodyInfoRequest {
 
     @NotNull
     @Min(1)
+    @Max(7)
     private Integer weeklyGoalCount;
 }

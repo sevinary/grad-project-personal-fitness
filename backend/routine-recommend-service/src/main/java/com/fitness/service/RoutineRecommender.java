@@ -135,7 +135,7 @@ public class RoutineRecommender {
     }
     public int calculateDifficulty(BodyInfo bodyInfo) { 
         int preferredLevel = bodyInfo.getPreferredLevel();
-        if(bodyInfo.getSkeletalMuscleMass() < 30.0){
+        if(bodyInfo.getSkeletalMuscleMass() > 0 && bodyInfo.getSkeletalMuscleMass() < 30.0){
             preferredLevel -= 1; //골격근량이 낮은 경우 난이도 1단계 낮춤
         } else if(bodyInfo.getBodyFat() > 25.0){
             preferredLevel += 1; //체지방률이 높은 경우 난이도 1단계 높임

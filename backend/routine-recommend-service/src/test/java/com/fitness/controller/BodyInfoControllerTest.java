@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,6 +34,7 @@ class BodyInfoControllerTest {
     private ObjectMapper objectMapper;
 
     private String jwtToken;
+    private long userId;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -51,6 +58,7 @@ class BodyInfoControllerTest {
 
         jwtToken = objectMapper.readTree(response)
                 .path("data").path("accessToken").asText();
+        userId = objectMapper.readTree(response).path("data").path("userId").asLong();
     }
 
     // ──────────────────────────── 신체 정보 등록 ────────────────────────────
@@ -81,17 +89,27 @@ class BodyInfoControllerTest {
                 .andExpect(jsonPath("$.data.goal").value("DIET"))
                 .andExpect(jsonPath("$.data.weeklyGoalCount").value(4))
                 .andExpect(jsonPath("$.data.hasInbody").value(true));
+
+        mockMvc.perform(get("/routines/recommend").param("userId", String.valueOf(userId))
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userID").value(userId))
+                .andExpect(jsonPath("$.weeklyRoutines.length()").value(7))
+                .andExpect(jsonPath("$.weeklyRoutines[0].dailyExercises[1].exercise.exerciseType").value("AEROBIC"))
+                .andExpect(jsonPath("$.recommendedWeight").value(25.0));
     }
 
     @Test
     @DisplayName("신체 정보 등록 성공 (인바디 없음) → 201 Created, hasInbody=false")
     void saveBodyInfo_success_withoutInbody() throws Exception {
-        Map<String, Object> req = Map.of(
+        Map<String, Object> req = new HashMap<>(Map.of(
                 "height", 175.0,
                 "weight", 70.0,
                 "goal", "MUSCLE",
                 "weeklyGoalCount", 5
-        );
+        ));
+        req.put("bodyFatRate", null);
+        req.put("muscleMass", null);
 
         mockMvc.perform(post("/body-info")
                         .header("Authorization", "Bearer " + jwtToken)
@@ -101,6 +119,76 @@ class BodyInfoControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.goal").value("MUSCLE"))
                 .andExpect(jsonPath("$.data.hasInbody").value(false));
+
+        mockMvc.perform(get("/routines/recommend").param("userId", String.valueOf(userId))
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.weeklyRoutines[0].dailyExercises[1].exercise.exerciseType").value("ANAEROBIC"))
+                .andExpect(jsonPath("$.weeklyRoutines[0].dailyExercises[1].sets").value(3))
+                .andExpect(jsonPath("$.weeklyRoutines[0].dailyExercises[1].reps").value(12));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 수요일",
+            "2, 월요일/목요일",
+            "3, 월요일/수요일/금요일",
+            "4, 월요일/화요일/목요일/금요일",
+            "5, 월요일/화요일/수요일/목요일/금요일",
+            "6, 월요일/화요일/수요일/목요일/금요일/토요일",
+            "7, 월요일/화요일/수요일/목요일/금요일/토요일/일요일"
+    })
+    void saveBodyInfo_generatesRoutineOnDefaultDays(int count, String expectedDays) throws Exception {
+        Map<String, Object> req = Map.of("height", 170.0, "weight", 65.0,
+                "goal", "MAINTAIN", "weeklyGoalCount", count);
+        mockMvc.perform(post("/body-info")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isCreated());
+
+        String response = mockMvc.perform(get("/routines/recommend")
+                        .param("userId", String.valueOf(userId))
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+        List<String> workoutDays = new java.util.ArrayList<>();
+        for (var day : objectMapper.readTree(response).path("weeklyRoutines")) {
+            if (!day.path("restDay").asBoolean()) {
+                workoutDays.add(day.path("dayName").asText());
+                assertThat(day.path("dailyExercises").size()).isGreaterThanOrEqualTo(3);
+                assertThat(day.path("dailyExercises").get(1).path("exercise").path("exerciseType").asText())
+                        .isEqualTo("AEROBIC");
+                assertThat(day.path("dailyExercises").get(1).path("reps").asInt()).isEqualTo(20);
+            } else {
+                assertThat(day.path("dailyExercises").size()).isZero();
+            }
+        }
+        assertThat(workoutDays).containsExactly(expectedDays.split("/"));
+    }
+
+    @Test
+    void recommendRoutine_withoutRoutine_returns404() throws Exception {
+        mockMvc.perform(get("/routines/recommend").param("userId", String.valueOf(userId))
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0", "8"})
+    void saveBodyInfo_invalidWeeklyGoalCount_returns400(int count) throws Exception {
+        Map<String, Object> req = Map.of("height", 170.0, "weight", 65.0,
+                "goal", "DIET", "weeklyGoalCount", count);
+        mockMvc.perform(post("/body-info")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("INVALID_REQUEST"));
+        mockMvc.perform(get("/routines/recommend").param("userId", String.valueOf(userId))
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound());
     }
 
     @Test

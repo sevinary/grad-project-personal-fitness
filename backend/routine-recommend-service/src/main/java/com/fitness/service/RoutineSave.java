@@ -1,5 +1,6 @@
 package com.fitness.service;
 
+import com.fitness.exception.AppException;
 import com.fitness.model.WeeklyRoutinePlan;
 import com.fitness.repository.WeeklyRoutinePlanRepository;
 
@@ -39,6 +40,7 @@ public class RoutineSave {
         return routineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("루틴을 찾을 수 없습니다. ID: " + id));
     }
     public WeeklyRoutinePlan findByUserID(long userID){
-        return routineRepository.findRoutineByUserID(userID).orElseThrow(() ->new IllegalArgumentException("해당 유저의 루틴을 찾을 수 없습니다." + userID));
+        return routineRepository.findRoutineByUserID(userID).orElseThrow(() ->
+                AppException.notFound("해당 유저의 루틴을 찾을 수 없습니다. " + userID));
     }
 }
