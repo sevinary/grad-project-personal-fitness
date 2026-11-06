@@ -38,7 +38,9 @@ public class RoutineRecommender {
         List<Exercise> aerobicExercises = new ArrayList<>();
         List<Exercise> stretchingExercises = new ArrayList<>();
         for (Exercise exercise : exerciseDatabase) {
-            if (exercise.getDifficultyLevel() >= bodyInfo.getPreferredLevel() - 1 && exercise.getDifficultyLevel() <= bodyInfo.getPreferredLevel() + 1) {
+            if ((exercise.getDifficultyLevel() < calculateDifficulty(bodyInfo) - 1
+            || exercise.getDifficultyLevel() > calculateDifficulty(bodyInfo) + 1)
+            && exercise.getExerciseType() != ExerciseType.STRETCHING) {
                 continue;
             }
             if (exercise.getExerciseType() == ExerciseType.STRETCHING) {
@@ -133,7 +135,7 @@ public class RoutineRecommender {
 
         return score;
     }
-    public int calculateDifficulty(BodyInfo bodyInfo) { 
+    public int calculateDifficulty(BodyInfo bodyInfo) {
         int preferredLevel = bodyInfo.getPreferredLevel();
         if(bodyInfo.getSkeletalMuscleMass() > 0 && bodyInfo.getSkeletalMuscleMass() < 30.0){
             preferredLevel -= 1; //골격근량이 낮은 경우 난이도 1단계 낮춤
