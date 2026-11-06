@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import axiosInstance from '../api/axiosInstance'
 import { Wordmark } from '../components/Navbar'
 
-// 전체 스텝: 1.기본정보 → 2.운동목표 → 3.주간목표 → 4.인바디유무 → 5.인바디입력 or BMI안내
-const TOTAL_STEPS = 5
+// 전체 스텝: 1.기본정보 → 2.운동목표 → 3.주간목표 → 4.운동경험·피할부위 → 5.인바디유무 → 6.인바디입력
+const TOTAL_STEPS = 6
 
 export default function OnboardingPage() {
   const { user } = useAuth()
@@ -18,8 +18,11 @@ export default function OnboardingPage() {
     height: '',
     weight: '',
     age: '',
+    gender: '',         // MALE | FEMALE
     goal: '',           // diet | muscle | fitness
     weeklyGoal: '',     // 2 | 3 | 5
+    level: '',          // 1 | 2 | 3 (선호 난이도)
+    avoid: 'NONE',      // NONE | CHEST | BACK | LEGS | SHOULDERS | ARMS
     hasInbody: null,    // true | false
     bodyFat: '',
     muscleMass: '',
@@ -29,8 +32,8 @@ export default function OnboardingPage() {
 
   const handleNext = () => {
     setError('')
-    // 스텝 4에서 인바디 없으면 5를 건너뛰고 제출
-    if (step === 4 && form.hasInbody === false) {
+    // 스텝 5에서 인바디 없으면 6을 건너뛰고 제출
+    if (step === 5 && form.hasInbody === false) {
       handleSubmit()
       return
     }
@@ -42,13 +45,16 @@ export default function OnboardingPage() {
     setError('')
     try {
       const payload = {
-    height: parseFloat(form.height),
-    weight: parseFloat(form.weight),
-    weeklyGoalCount: parseInt(form.weeklyGoal),  // weeklyGoal → weeklyGoalCount
-    goal: form.goal,
-    bodyFatRate: form.hasInbody ? parseFloat(form.bodyFat) : null,  // bodyFat → bodyFatRate
-    muscleMass: form.hasInbody ? parseFloat(form.muscleMass) : null,
-    }
+        gender: form.gender,
+        height: parseFloat(form.height),
+        weight: parseFloat(form.weight),
+        goal: form.goal,
+        weeklyGoalCount: parseInt(form.weeklyGoal),
+        preferredLevel: parseInt(form.level),
+        avoidMuscleGroup: form.avoid,
+        bodyFatRate: form.hasInbody ? parseFloat(form.bodyFat) : null,
+        muscleMass: form.hasInbody ? parseFloat(form.muscleMass) : null,
+      }
       await axiosInstance.post('/body-info', payload)
       navigate('/home')
     } catch (err) {
@@ -59,7 +65,7 @@ export default function OnboardingPage() {
   }
 
   const progress = (step / TOTAL_STEPS) * 100
-  const stepNames = ['기본 정보', '운동 목표', '주간 운동 횟수', '인바디 여부', '인바디 입력']
+  const stepNames = ['기본 정보', '운동 목표', '주간 운동 횟수', '운동 경험', '인바디 여부', '인바디 입력']
 
   return (
     <div style={{
@@ -97,8 +103,9 @@ export default function OnboardingPage() {
           {step === 1 && <StepBasicInfo form={form} update={update} />}
           {step === 2 && <StepGoal form={form} update={update} />}
           {step === 3 && <StepWeeklyGoal form={form} update={update} />}
-          {step === 4 && <StepInbodyCheck form={form} update={update} />}
-          {step === 5 && form.hasInbody && <StepInbodyInput form={form} update={update} />}
+          {step === 4 && <StepExperience form={form} update={update} />}
+          {step === 5 && <StepInbodyCheck form={form} update={update} />}
+          {step === 6 && form.hasInbody && <StepInbodyInput form={form} update={update} />}
 
           {error && <p className="error-msg" style={{ marginTop: '12px' }}>{error}</p>}
 
@@ -110,10 +117,10 @@ export default function OnboardingPage() {
             )}
             <button
               className="btn-primary"
-              onClick={step === 5 || (step === 4 && form.hasInbody === false) ? handleSubmit : handleNext}
+              onClick={step === TOTAL_STEPS || (step === 5 && form.hasInbody === false) ? handleSubmit : handleNext}
               disabled={loading || !isStepValid(step, form)}
             >
-              {loading ? '루틴 만드는 중...' : (step === TOTAL_STEPS || (step === 4 && form.hasInbody === false)) ? '내 루틴 만들기' : '다음'}
+              {loading ? '루틴 만드는 중...' : (step === TOTAL_STEPS || (step === 5 && form.hasInbody === false)) ? '내 루틴 만들기' : '다음'}
             </button>
           </div>
         </div>
@@ -123,11 +130,12 @@ export default function OnboardingPage() {
 }
 
 function isStepValid(step, form) {
-  if (step === 1) return form.height && form.weight && form.age
+  if (step === 1) return form.gender && form.height && form.weight && form.age
   if (step === 2) return form.goal
   if (step === 3) return form.weeklyGoal
-  if (step === 4) return form.hasInbody !== null
-  if (step === 5) return form.bodyFat && form.muscleMass
+  if (step === 4) return form.level
+  if (step === 5) return form.hasInbody !== null
+  if (step === 6) return form.bodyFat && form.muscleMass
   return true
 }
 
@@ -140,6 +148,22 @@ function StepBasicInfo({ form, update }) {
         운동 루틴 추천을 위해 필요해요.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div>
+          <label className="label">성별</label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {[{ value: 'FEMALE', label: '여성' }, { value: 'MALE', label: '남성' }].map(g => (
+              <button
+                key={g.value}
+                type="button"
+                className={`option-btn ${form.gender === g.value ? 'selected' : ''}`}
+                onClick={() => update('gender', g.value)}
+                style={{ justifyContent: 'center', fontWeight: 600 }}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div>
           <label className="label">나이</label>
           <input className="input" type="number" placeholder="예: 22" value={form.age}
@@ -250,7 +274,66 @@ function StepWeeklyGoal({ form, update }) {
   )
 }
 
-// ─── 스텝 4: 인바디 유무 확인 ───
+// ─── 스텝 4: 운동 경험 · 피하고 싶은 부위 ───
+function StepExperience({ form, update }) {
+  const levels = [
+    { value: '1', icon: '입문', label: '운동이 처음이에요', desc: '가장 쉬운 동작부터 시작해요' },
+    { value: '2', icon: '초급', label: '가끔 해 봤어요', desc: '기본 동작 위주로 추천해요' },
+    { value: '3', icon: '중급', label: '꾸준히 해 왔어요', desc: '조금 더 도전적인 동작도 넣어요' },
+  ]
+  const parts = [
+    { value: 'NONE', label: '없음' },
+    { value: 'CHEST', label: '가슴' },
+    { value: 'BACK', label: '등' },
+    { value: 'LEGS', label: '하체' },
+    { value: 'SHOULDERS', label: '어깨' },
+    { value: 'ARMS', label: '팔' },
+  ]
+  return (
+    <div>
+      <h2 style={{ fontWeight: 700, fontSize: '20px', marginBottom: '6px' }}>운동 경험이 어느 정도인가요?</h2>
+      <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '24px' }}>
+        경험에 맞춰 운동 난이도를 정해드려요.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {levels.map(l => (
+          <button
+            key={l.value}
+            className={`option-btn ${form.level === l.value ? 'selected' : ''}`}
+            onClick={() => update('level', l.value)}
+            type="button"
+          >
+            <span className="option-icon">{l.icon}</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: '15px' }}>{l.label}</div>
+              <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>{l.desc}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <h3 style={{ fontWeight: 700, fontSize: '16px', margin: '28px 0 6px' }}>피하고 싶은 부위가 있나요?</h3>
+      <p style={{ color: '#64748B', fontSize: '13px', marginBottom: '14px' }}>
+        통증이나 부상이 있는 부위는 그날 스트레칭으로 대신해요.
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+        {parts.map(p => (
+          <button
+            key={p.value}
+            type="button"
+            className={`option-btn ${form.avoid === p.value ? 'selected' : ''}`}
+            onClick={() => update('avoid', p.value)}
+            style={{ justifyContent: 'center', padding: '12px 8px', fontWeight: 600, fontSize: '14px' }}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── 스텝 5: 인바디 유무 확인 ───
 function StepInbodyCheck({ form, update }) {
   return (
     <div>
@@ -287,7 +370,7 @@ function StepInbodyCheck({ form, update }) {
   )
 }
 
-// ─── 스텝 5: 인바디 수치 입력 ───
+// ─── 스텝 6: 인바디 수치 입력 ───
 function StepInbodyInput({ form, update }) {
   return (
     <div>
