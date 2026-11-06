@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Wordmark } from '../components/Navbar'
 
 export default function LandingPage() {
   return (
@@ -12,8 +13,7 @@ export default function LandingPage() {
         borderBottom: '1px solid #E2E8F0',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '22px' }}>💪</span>
-          <span style={{ fontWeight: 700, fontSize: '18px', color: '#4F7EF7' }}>FitStart</span>
+          <Wordmark size={20} />
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <Link to="/login" style={{
@@ -30,7 +30,7 @@ export default function LandingPage() {
           <Link to="/signup" style={{
             padding: '8px 20px',
             borderRadius: '8px',
-            background: '#4F7EF7',
+            background: 'var(--primary)',
             color: 'white',
             textDecoration: 'none',
             fontWeight: 600,
@@ -50,26 +50,26 @@ export default function LandingPage() {
       }}>
         <div style={{
           display: 'inline-block',
-          background: '#EEF2FF',
-          color: '#4F7EF7',
+          background: 'var(--primary-light)',
+          color: 'var(--primary)',
           padding: '6px 16px',
           borderRadius: '20px',
           fontSize: '13px',
           fontWeight: 600,
           marginBottom: '24px',
         }}>
-          🏃 운동 초보자를 위한 맞춤형 플랫폼
+          운동 초보자를 위한 맞춤형 플랫폼
         </div>
         <h1 style={{
           fontSize: '48px',
           fontWeight: 800,
-          color: '#1E293B',
-          lineHeight: 1.2,
+          color: 'var(--text)',
+          lineHeight: 1.25,
           marginBottom: '20px',
           letterSpacing: '-1px',
         }}>
-          운동 습관, 지금<br />
-          <span style={{ color: '#4F7EF7' }}>시작하세요</span>
+          오늘의 기록이<br />
+          <span style={{ color: 'var(--primary)' }}>내일의 승리가 된다</span>
         </h1>
         <p style={{
           fontSize: '18px',
@@ -82,16 +82,17 @@ export default function LandingPage() {
         </p>
         <Link to="/signup" style={{
           display: 'inline-block',
-          background: '#4F7EF7',
+          background: 'var(--primary-dark)',
           color: 'white',
-          padding: '16px 40px',
+          padding: '20px 56px',
           borderRadius: '12px',
           textDecoration: 'none',
-          fontWeight: 700,
-          fontSize: '17px',
-          boxShadow: '0 4px 15px rgba(79,126,247,0.3)',
+          fontWeight: 800,
+          fontSize: '21px',
+          letterSpacing: '0.5px',
+          boxShadow: '0 8px 24px rgba(34,86,106,0.35)',
         }}>
-          무료로 시작하기 →
+          FITORY 시작하기
         </Link>
       </section>
 
@@ -105,12 +106,12 @@ export default function LandingPage() {
         padding: '0 20px 80px',
       }}>
         {[
-          { icon: '🎯', title: '맞춤형 루틴 추천', desc: '신체 정보와 목표에 맞게 자동으로 운동 루틴을 생성해드립니다.' },
-          { icon: '✅', title: '간편한 운동 기록', desc: '오늘 운동한 항목을 체크만 하면 자동으로 기록됩니다.' },
-          { icon: '📊', title: '대시보드 시각화', desc: '주간·월간 운동 달성률을 그래프로 한눈에 확인하세요.' },
+          { icon: '01', title: '맞춤형 루틴 추천', desc: '신체 정보와 목표에 맞게 자동으로 운동 루틴을 생성해드립니다.' },
+          { icon: '02', title: '간편한 운동 기록', desc: '오늘 운동한 항목을 체크만 하면 자동으로 기록됩니다.' },
+          { icon: '03', title: '대시보드 시각화', desc: '주간·월간 운동 달성률을 그래프로 한눈에 확인하세요.' },
         ].map((item) => (
           <div key={item.title} className="card" style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', marginBottom: '12px' }}>{item.icon}</div>
+            <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--primary)', letterSpacing: '1px', marginBottom: '12px' }}>{item.icon}</div>
             <h3 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px', color: '#1E293B' }}>
               {item.title}
             </h3>

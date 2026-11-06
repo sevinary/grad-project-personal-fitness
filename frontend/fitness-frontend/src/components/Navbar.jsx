@@ -16,7 +16,7 @@ export default function Navbar() {
   return (
     <nav style={{
       background: 'white',
-      borderBottom: '1.5px solid #E2E8F0',
+      borderBottom: '1px solid var(--border)',
       padding: '0 24px',
       height: '60px',
       display: 'flex',
@@ -26,28 +26,25 @@ export default function Navbar() {
       top: 0,
       zIndex: 100,
     }}>
-      {/* 로고 */}
-      <Link to="/home" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ fontSize: '20px' }}>💪</span>
-        <span style={{ fontWeight: 700, fontSize: '17px', color: '#4F7EF7' }}>FitStart</span>
+      <Link to="/home" style={{ textDecoration: 'none' }}>
+        <Wordmark />
       </Link>
 
-      {/* 메뉴 */}
       {user && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <NavLink to="/home" active={isActive('/home')}>홈</NavLink>
-          <NavLink to="/routine" active={isActive('/routine')}>운동 루틴</NavLink>
+          <NavLink to="/routine" active={isActive('/routine')}>오늘의 루틴</NavLink>
           <NavLink to="/dashboard" active={isActive('/dashboard')}>대시보드</NavLink>
           <button
             onClick={handleLogout}
             style={{
               background: 'none',
-              border: '1.5px solid #E2E8F0',
+              border: '1px solid var(--border)',
               borderRadius: '8px',
               padding: '6px 14px',
               fontSize: '13px',
               fontWeight: 500,
-              color: '#64748B',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               marginLeft: '8px',
             }}
@@ -60,6 +57,14 @@ export default function Navbar() {
   )
 }
 
+export function Wordmark({ size = 19 }) {
+  return (
+    <span style={{ fontWeight: 800, fontSize: `${size}px`, letterSpacing: '1.5px', color: 'var(--text)' }}>
+      <span style={{ color: 'var(--primary)' }}>FIT</span>ORY
+    </span>
+  )
+}
+
 function NavLink({ to, children, active }) {
   return (
     <Link
@@ -69,9 +74,9 @@ function NavLink({ to, children, active }) {
         padding: '6px 14px',
         borderRadius: '8px',
         fontSize: '14px',
-        fontWeight: active ? 600 : 400,
-        color: active ? '#4F7EF7' : '#64748B',
-        background: active ? '#EEF2FF' : 'transparent',
+        fontWeight: active ? 700 : 500,
+        color: active ? 'var(--primary)' : 'var(--text-secondary)',
+        background: active ? 'var(--primary-light)' : 'transparent',
         transition: 'background 0.15s',
       }}
     >
