@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Wordmark } from '../components/Navbar'
+import { apiErrorMessage } from '../api/fitory'
 
 export default function LoginPage() {
  const [username, setUsername] = useState('')
@@ -23,7 +25,7 @@ export default function LoginPage() {
         navigate('/home')
       }
     } catch (err) {
-      setError(err.response?.data?.message || '이메일 또는 비밀번호가 올바르지 않습니다.')
+      setError(apiErrorMessage(err, '아이디 또는 비밀번호가 올바르지 않습니다.'))
     } finally {
       setLoading(false)
     }
@@ -42,8 +44,7 @@ export default function LoginPage() {
         {/* 로고 */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontSize: '28px' }}>💪</span>
-            <div style={{ fontWeight: 800, fontSize: '22px', color: '#4F7EF7', marginTop: '4px' }}>FitStart</div>
+            <Wordmark size={26} />
           </Link>
           <p style={{ color: '#64748B', marginTop: '8px', fontSize: '15px' }}>
             다시 만나서 반가워요!
@@ -53,11 +54,11 @@ export default function LoginPage() {
         <div className="card">
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label className="label">아이디(사용자명)</label>
+              <label className="label">아이디</label>
               <input
                 className="input"
                 type="text"
-                placeholder="사용자명을 입력하세요"
+                placeholder="아이디를 입력하세요"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -84,7 +85,7 @@ export default function LoginPage() {
 
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: '#64748B' }}>
             아직 계정이 없으신가요?{' '}
-            <Link to="/signup" style={{ color: '#4F7EF7', fontWeight: 600, textDecoration: 'none' }}>
+            <Link to="/signup" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
               회원가입
             </Link>
           </p>
