@@ -1,178 +1,201 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import axiosInstance from '../api/axiosInstance'
+import { useAuth } from '../context/AuthContext'
+import {
+  DAY_LABELS, fetchPlan, fetchLogs, saveLog, deleteLog, toDateStr, todayIndex, apiErrorMessage,
+} from '../api/fitory'
 
 export default function RoutinePage() {
-  const [routine, setRoutine] = useState(null)
-  const [workoutLogs, setWorkoutLogs] = useState({}) // { exerciseId: logId }
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+  const [plan, setPlan] = useState(null)
+  const [selected, setSelected] = useState(todayIndex())
+  const [doneLogs, setDoneLogs] = useState({}) // { exerciseId: logId } — 오늘 완료한 운동
   const [saving, setSaving] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [notFound, setNotFound] = useState(false)
+
+  const today = todayIndex()
+  const todayStr = toDateStr(new Date())
 
   useEffect(() => {
-    const fetchRoutine = async () => {
+    if (!user?.userId) return
+    const load = async () => {
       try {
-        const [routineRes, logsRes] = await Promise.all([
-          axiosInstance.get('/routines/recommend'),
-          axiosInstance.get('/workout-logs'),
+        const [p, logs] = await Promise.all([
+          fetchPlan(user.userId),
+          fetchLogs(user.userId, 'weekly').catch(() => []),
         ])
-        setRoutine(routineRes.data)
-
-        // 오늘 날짜의 기록만 체크 상태로 표시
-        const today = new Date().toISOString().split('T')[0]
-        const todayLogs = {}
-        logsRes.data?.forEach(log => {
-          if (log.date === today && log.completed) {
-            todayLogs[log.exerciseId] = log.logId
-          }
-        })
-        setWorkoutLogs(todayLogs)
+        setPlan(p)
+        const done = {}
+        logs.filter((l) => l.date === todayStr).forEach((l) => { done[l.exerciseId] = l.logId })
+        setDoneLogs(done)
       } catch (err) {
-        console.error(err)
+        if (err.response?.status === 404) setNotFound(true)
+        else setError(apiErrorMessage(err, '루틴을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'))
       } finally {
         setLoading(false)
       }
     }
-    fetchRoutine()
-  }, [])
+    load()
+  }, [user?.userId, todayStr])
 
-  const handleCheck = async (exerciseId) => {
-    const isCompleted = !!workoutLogs[exerciseId]
-    setSaving(prev => ({ ...prev, [exerciseId]: true }))
+  const handleCheck = async (exercise) => {
+    const id = exercise.exerciseId
+    setSaving((s) => ({ ...s, [id]: true }))
     try {
-      if (isCompleted) {
-        // 체크 해제 → 기록 삭제
-        await axiosInstance.delete(`/workout-logs/${workoutLogs[exerciseId]}`)
-        setWorkoutLogs(prev => {
-          const next = { ...prev }
-          delete next[exerciseId]
-          return next
-        })
+      if (doneLogs[id]) {
+        await deleteLog(doneLogs[id])
+        setDoneLogs((d) => { const next = { ...d }; delete next[id]; return next })
       } else {
-        // 체크 → 기록 저장
-        const res = await axiosInstance.post('/workout-logs', {
-          exerciseId,
-          date: new Date().toISOString().split('T')[0],
-          completed: true,
-        })
-        setWorkoutLogs(prev => ({ ...prev, [exerciseId]: res.data.logId }))
+        const logId = await saveLog(user.userId, exercise, todayStr)
+        setDoneLogs((d) => ({ ...d, [id]: logId }))
       }
     } catch (err) {
-      alert('저장에 실패했습니다. 다시 시도해주세요.')
+      setError(apiErrorMessage(err, '기록 저장에 실패했어요. 다시 시도해 주세요.'))
     } finally {
-      setSaving(prev => ({ ...prev, [exerciseId]: false }))
+      setSaving((s) => ({ ...s, [id]: false }))
     }
   }
 
-  const completedCount = Object.keys(workoutLogs).length
-  const totalCount = routine?.exercises?.length ?? 0
-  const progressPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
+  const day = plan?.days[selected]
+  const isToday = selected === today
+  const todayExercises = plan?.days[today]?.exercises ?? []
+  const completed = todayExercises.filter((e) => doneLogs[e.exerciseId]).length
+  const progress = todayExercises.length ? Math.round((completed / todayExercises.length) * 100) : 0
+  const dateLabel = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
+    <div className="page">
       <Navbar />
-      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '32px 16px' }}>
-        <h1 style={{ fontWeight: 800, fontSize: '24px', marginBottom: '4px' }}>오늘의 루틴</h1>
-        <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '24px' }}>
-          {routine?.routineName ?? '맞춤 운동 루틴'}
-        </p>
+      <div className="page-body" style={{ maxWidth: '680px' }}>
+        <p className="page-eyebrow">{dateLabel}</p>
+        <h1 className="page-title">오늘의 루틴</h1>
+        <p className="page-sub">나에게 맞춰 만들어진 이번 주 운동 계획이에요.</p>
 
         {loading ? (
           <div className="spinner" />
+        ) : notFound ? (
+          <div className="card empty-state" style={{ marginTop: '28px' }}>
+            <h3>아직 만들어진 루틴이 없어요</h3>
+            <p>신체 정보와 운동 목표를 입력하면 맞춤 루틴을 만들어 드려요.</p>
+            <Link to="/onboarding"><button className="btn-primary" style={{ maxWidth: '240px' }}>정보 입력하러 가기</button></Link>
+          </div>
         ) : (
           <>
-            {/* 진행률 카드 */}
-            <div className="card" style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <span style={{ fontWeight: 600, fontSize: '15px' }}>오늘의 진행률</span>
-                <span style={{ fontWeight: 700, fontSize: '20px', color: progressPct === 100 ? '#10B981' : '#4F7EF7' }}>
-                  {completedCount}/{totalCount}
-                </span>
-              </div>
-              <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '99px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${progressPct}%`,
-                  background: progressPct === 100 ? '#10B981' : '#4F7EF7',
-                  borderRadius: '99px',
-                  transition: 'width 0.4s ease',
-                }} />
-              </div>
-              {progressPct === 100 && (
-                <p style={{ color: '#10B981', fontWeight: 600, fontSize: '14px', marginTop: '10px', textAlign: 'center' }}>
-                  🎉 오늘 운동 완료! 대단해요!
-                </p>
-              )}
-            </div>
+            {error && <p className="error-msg" style={{ marginTop: '16px' }}>{error}</p>}
 
-            {/* 운동 목록 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {routine?.exercises?.map((ex) => {
-                const isCompleted = !!workoutLogs[ex.exerciseId]
-                const isSaving = saving[ex.exerciseId]
+            {/* 요일 선택 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', margin: '28px 0 20px' }}>
+              {plan.days.map((d, i) => {
+                const active = i === selected
                 return (
-                  <div
-                    key={ex.exerciseId}
-                    className="card"
+                  <button
+                    key={d.dayName}
+                    onClick={() => setSelected(i)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '16px',
-                      opacity: isSaving ? 0.7 : 1,
-                      transition: 'all 0.2s',
-                      border: isCompleted ? '1.5px solid #10B981' : '1.5px solid transparent',
-                      background: isCompleted ? '#F0FDF4' : 'white',
+                      padding: '10px 0',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      border: active ? '1.5px solid var(--primary)' : '1px solid var(--border)',
+                      background: active ? 'var(--primary)' : 'white',
+                      color: active ? 'white' : d.restDay ? 'var(--text-light)' : 'var(--text)',
                     }}
                   >
-                    {/* 체크박스 */}
-                    <button
-                      onClick={() => handleCheck(ex.exerciseId)}
-                      disabled={isSaving}
-                      style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '8px',
-                        border: isCompleted ? 'none' : '2px solid #CBD5E1',
-                        background: isCompleted ? '#10B981' : 'white',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        fontSize: '14px',
-                        color: 'white',
-                        fontWeight: 700,
-                        transition: 'all 0.2s',
-                      }}
-                    >
-                      {isCompleted ? '✓' : ''}
-                    </button>
-
-                    {/* 운동 정보 */}
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontWeight: 600,
-                        fontSize: '15px',
-                        color: isCompleted ? '#059669' : '#1E293B',
-                        textDecoration: isCompleted ? 'line-through' : 'none',
-                      }}>
-                        {ex.name}
-                      </div>
-                      <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '2px' }}>
-                        {ex.category}
-                      </div>
+                    <div style={{ fontSize: '13px', fontWeight: 700 }}>
+                      {DAY_LABELS[i]}{i === today && <span style={{ fontWeight: 500 }}> · 오늘</span>}
                     </div>
-
-                    {/* 세트/반복 */}
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 700, fontSize: '16px', color: '#4F7EF7' }}>
-                        {ex.sets}세트
-                      </div>
-                      <div style={{ fontSize: '13px', color: '#94A3B8' }}>× {ex.reps}회</div>
+                    <div style={{ fontSize: '11px', marginTop: '3px', opacity: active ? 0.9 : 1 }}>
+                      {d.restDay ? '휴식' : d.focus}
                     </div>
-                  </div>
+                  </button>
                 )
               })}
             </div>
+
+            {/* 오늘 진행률 */}
+            {isToday && !day.restDay && (
+              <div className="card" style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
+                  <span style={{ fontWeight: 700, fontSize: '15px' }}>오늘의 진행률</span>
+                  <span style={{ fontWeight: 800, fontSize: '20px', color: 'var(--primary)' }}>
+                    {completed} / {todayExercises.length}
+                  </span>
+                </div>
+                <div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div>
+                {progress === 100 && (
+                  <p style={{ marginTop: '12px', fontSize: '14px', fontWeight: 600, color: 'var(--primary)' }}>
+                    오늘 운동을 모두 마쳤어요. 수고했어요!
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* 운동 목록 */}
+            {day.restDay ? (
+              <div className="card empty-state">
+                <h3>{DAY_LABELS[selected]}요일은 휴식일이에요</h3>
+                <p style={{ marginBottom: 0 }}>가벼운 스트레칭으로 몸을 풀어 주세요.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {day.exercises.map((ex, idx) => {
+                  const done = isToday && !!doneLogs[ex.exerciseId]
+                  return (
+                    <div
+                      key={`${ex.exerciseId}-${idx}`}
+                      className="card"
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 20px',
+                        borderColor: done ? 'var(--primary)' : 'var(--border)',
+                        background: done ? 'var(--primary-light)' : 'white',
+                        opacity: saving[ex.exerciseId] ? 0.6 : 1,
+                      }}
+                    >
+                      {isToday && (
+                        <button
+                          onClick={() => handleCheck(ex)}
+                          disabled={saving[ex.exerciseId]}
+                          aria-label={done ? '완료 취소' : '완료로 표시'}
+                          style={{
+                            width: '28px', height: '28px', borderRadius: '8px', flexShrink: 0, cursor: 'pointer',
+                            border: done ? 'none' : '1.5px solid #C5CED2',
+                            background: done ? 'var(--primary)' : 'white',
+                            color: 'white', fontSize: '15px', fontWeight: 700,
+                          }}
+                        >
+                          {done ? '✓' : ''}
+                        </button>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontWeight: 700, fontSize: '15px',
+                          color: done ? 'var(--primary)' : 'var(--text)',
+                          textDecoration: done ? 'line-through' : 'none',
+                        }}>
+                          {ex.name}
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                          <span className="chip chip-primary">{ex.typeLabel}</span>
+                          {ex.muscle && ex.muscle !== 'NONE' && <span className="chip">{ex.muscleLabel}</span>}
+                          <span className="chip">난이도 {ex.level}</span>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontWeight: 800, fontSize: '17px' }}>{ex.sets}세트</div>
+                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{ex.reps}회씩</div>
+                      </div>
+                    </div>
+                  )
+                })}
+                {!isToday && (
+                  <p className="muted" style={{ fontSize: '13px', textAlign: 'center', marginTop: '6px' }}>
+                    완료 체크는 오늘 루틴에서만 할 수 있어요.
+                  </p>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>

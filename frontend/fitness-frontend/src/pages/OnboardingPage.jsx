@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import axiosInstance from '../api/axiosInstance'
+import { Wordmark } from '../components/Navbar'
 
 // 전체 스텝: 1.기본정보 → 2.운동목표 → 3.주간목표 → 4.인바디유무 → 5.인바디입력 or BMI안내
 const TOTAL_STEPS = 5
@@ -51,46 +52,48 @@ export default function OnboardingPage() {
       await axiosInstance.post('/body-info', payload)
       navigate('/home')
     } catch (err) {
-      setError(err.response?.data?.message || '정보 저장에 실패했습니다.')
+      setError(err.response?.data?.error?.message || err.response?.data?.message || '정보 저장에 실패했습니다.')
     } finally {
       setLoading(false)
     }
   }
 
   const progress = (step / TOTAL_STEPS) * 100
+  const stepNames = ['기본 정보', '운동 목표', '주간 운동 횟수', '인바디 여부', '인바디 입력']
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#F8FAFC',
+      background: 'var(--bg)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '20px',
+      padding: '40px 16px',
     }}>
-      <div style={{ width: '100%', maxWidth: '460px' }}>
-        {/* 프로그레스 바 */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
-              {step} / {TOTAL_STEPS}단계
-            </span>
-            <span style={{ fontSize: '13px', color: '#4F7EF7', fontWeight: 600 }}>
-              {Math.round(progress)}%
-            </span>
-          </div>
-          <div style={{ height: '6px', background: '#E2E8F0', borderRadius: '99px', overflow: 'hidden' }}>
-            <div style={{
-              height: '100%',
-              width: `${progress}%`,
-              background: '#4F7EF7',
-              borderRadius: '99px',
-              transition: 'width 0.4s ease',
-            }} />
-          </div>
+      <div style={{ width: '100%', maxWidth: '480px' }}>
+        {/* 브랜드 */}
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <Wordmark size={32} />
+          <p style={{ marginTop: '12px', fontSize: '20px', fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>
+            오늘의 기록이 내일의 승리가 된다
+          </p>
+          <p style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>
+            몇 가지만 알려주시면 나에게 맞는 운동 루틴을 만들어 드려요.
+          </p>
         </div>
 
-        <div className="card">
+        {/* 진행 상황 */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary)', letterSpacing: '1px' }}>
+            STEP {step} / {TOTAL_STEPS}
+          </span>
+          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{stepNames[step - 1]}</span>
+        </div>
+        <div className="progress-track" style={{ height: '6px', marginBottom: '24px' }}>
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
+        </div>
+
+        <div className="card" style={{ padding: '32px' }}>
           {step === 1 && <StepBasicInfo form={form} update={update} />}
           {step === 2 && <StepGoal form={form} update={update} />}
           {step === 3 && <StepWeeklyGoal form={form} update={update} />}
@@ -99,10 +102,10 @@ export default function OnboardingPage() {
 
           {error && <p className="error-msg" style={{ marginTop: '12px' }}>{error}</p>}
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '28px' }}>
             {step > 1 && (
               <button className="btn-ghost" onClick={() => setStep(s => s - 1)}>
-                ← 이전
+                이전
               </button>
             )}
             <button
@@ -110,7 +113,7 @@ export default function OnboardingPage() {
               onClick={step === 5 || (step === 4 && form.hasInbody === false) ? handleSubmit : handleNext}
               disabled={loading || !isStepValid(step, form)}
             >
-              {loading ? '저장 중...' : (step === TOTAL_STEPS || (step === 4 && form.hasInbody === false)) ? '시작하기 🎉' : '다음 →'}
+              {loading ? '루틴 만드는 중...' : (step === TOTAL_STEPS || (step === 4 && form.hasInbody === false)) ? '내 루틴 만들기' : '다음'}
             </button>
           </div>
         </div>
@@ -156,11 +159,11 @@ function StepBasicInfo({ form, update }) {
         </div>
         {form.height && form.weight && (
           <div style={{
-            background: '#EEF2FF',
+            background: 'var(--primary-light)',
             borderRadius: '10px',
             padding: '12px 16px',
             fontSize: '14px',
-            color: '#4F7EF7',
+            color: 'var(--primary)',
             fontWeight: 600,
           }}>
             BMI: {(form.weight / ((form.height / 100) ** 2)).toFixed(1)}
@@ -184,9 +187,9 @@ function getBmiLabel(bmi) {
 // ─── 스텝 2: 운동 목표 ───
 function StepGoal({ form, update }) {
 const goals = [
-  { value: 'DIET', icon: '🔥', label: '체중 감량/다이어트', desc: '유산소 위주 루틴 추천' },
-  { value: 'MUSCLE', icon: '💪', label: '근력 향상', desc: '근력 운동 위주 루틴 추천' },
-  { value: 'MAINTAIN', icon: '🏃', label: '기초체력 향상', desc: '전신 균형 루틴 추천' },
+  { value: 'DIET', icon: '감량', label: '체중 감량/다이어트', desc: '유산소 위주 루틴 추천' },
+  { value: 'MUSCLE', icon: '근력', label: '근력 향상', desc: '근력 운동 위주 루틴 추천' },
+  { value: 'MAINTAIN', icon: '체력', label: '기초체력 향상', desc: '전신 균형 루틴 추천' },
 ]
   return (
     <div>
@@ -235,7 +238,7 @@ function StepWeeklyGoal({ form, update }) {
             onClick={() => update('weeklyGoal', o.value)}
             type="button"
           >
-            <span className="option-icon">📅</span>
+            <span className="option-icon">{o.value}회</span>
             <div>
               <div style={{ fontWeight: 600, fontSize: '15px' }}>{o.label}</div>
               <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>{o.desc}</div>
@@ -262,7 +265,7 @@ function StepInbodyCheck({ form, update }) {
           onClick={() => update('hasInbody', true)}
           type="button"
         >
-          <span className="option-icon">📋</span>
+          <span className="option-icon">있음</span>
           <div>
             <div style={{ fontWeight: 600 }}>있어요 — 인바디 정보 직접 입력할게요</div>
             <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>더 정확한 맞춤 루틴 추천</div>
@@ -273,7 +276,7 @@ function StepInbodyCheck({ form, update }) {
           onClick={() => update('hasInbody', false)}
           type="button"
         >
-          <span className="option-icon">🏃</span>
+          <span className="option-icon">없음</span>
           <div>
             <div style={{ fontWeight: 600 }}>없어요 — BMI 기반으로 추천받을게요</div>
             <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>초보자용 전신 균형 루틴 추천</div>
