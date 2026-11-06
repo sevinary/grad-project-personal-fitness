@@ -2,10 +2,14 @@ package com.fitness.service;
 
 import com.fitness.dto.BodyInfoRequest;
 import com.fitness.exception.AppException;
+import com.fitness.model.BodyInfo;
+import com.fitness.model.Enums.DayOfWeek;
+import com.fitness.model.Enums.Goal;
 import com.fitness.model.UserBodyInfo;
 import com.fitness.repository.UserBodyInfoRepository;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +17,17 @@ import java.time.LocalDateTime;
 public class BodyInfoApiService {
 
     private final UserBodyInfoRepository userBodyInfoRepository;
+    private final RoutineRecommender routineRecommender;
+    private final RoutineSave routineSave;
 
-    public BodyInfoApiService(UserBodyInfoRepository userBodyInfoRepository) {
+    public BodyInfoApiService(UserBodyInfoRepository userBodyInfoRepository,
+                              RoutineRecommender routineRecommender, RoutineSave routineSave) {
         this.userBodyInfoRepository = userBodyInfoRepository;
+        this.routineRecommender = routineRecommender;
+        this.routineSave = routineSave;
     }
 
+    @Transactional
     public BodyInfoResult save(Long userId, BodyInfoRequest request) {
         if (userBodyInfoRepository.existsByUserId(userId)) {
             throw AppException.bodyInfoExists();
@@ -35,7 +45,43 @@ public class BodyInfoApiService {
         info.setUpdatedAt(LocalDateTime.now());
 
         info = userBodyInfoRepository.save(info);
+        BodyInfo routineBodyInfo = toRoutineBodyInfo(info);
+        routineSave.saveOrUpdateRoutine(routineRecommender.generateRoutine(routineBodyInfo));
         return toResult(info);
+    }
+
+    private BodyInfo toRoutineBodyInfo(UserBodyInfo info) {
+        Goal goal = switch (info.getGoal()) {
+            case DIET -> Goal.WEIGHT_LOSS;
+            case MUSCLE -> Goal.MUSCLE_GAIN;
+            case MAINTAIN -> Goal.MAINTENANCE;
+        };
+        BodyInfo bodyInfo = new BodyInfo(0, info.getUserId(), info.getHeight(), info.getWeight(),
+                null, goal, defaultWorkoutDays(info.getWeeklyGoalCount()));
+        // Missing InBody measurements retain BodyInfo's -1 (unknown) defaults.
+        if (info.getBodyFatRate() != null) {
+            bodyInfo.setBodyFat(info.getBodyFatRate());
+        }
+        if (info.getMuscleMass() != null) {
+            bodyInfo.setSkeletalMuscleMass(info.getMuscleMass());
+        }
+        return bodyInfo;
+    }
+
+    private DayOfWeek[] defaultWorkoutDays(int weeklyGoalCount) {
+        return switch (weeklyGoalCount) {
+            case 1 -> new DayOfWeek[]{DayOfWeek.WEDNESDAY};
+            case 2 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.THURSDAY};
+            case 3 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY};
+            case 4 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
+                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY};
+            case 5 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY};
+            case 6 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
+            case 7 -> DayOfWeek.values();
+            default -> throw AppException.badRequest("주당 운동 횟수는 1~7회여야 합니다.");
+        };
     }
 
     private BodyInfoResult toResult(UserBodyInfo info) {

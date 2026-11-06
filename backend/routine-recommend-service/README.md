@@ -1,3 +1,24 @@
+## 온보딩 후 루틴 자동 생성
+
+인증된 사용자가 `POST /body-info`를 호출하면 신체 정보와 주간 추천 루틴을 같은 트랜잭션에서 생성·저장합니다. 루틴 생성 또는 저장에 실패하면 신체 정보 저장도 롤백됩니다. 기존 201 응답 형식은 유지되며, 저장된 루틴은 `GET /routines/recommend?userId={userId}`로 조회합니다. 루틴이 없으면 404 (`NOT_FOUND`)를 반환합니다. 신체 정보 중복 등록은 기존처럼 409 (`BODY_INFO_EXISTS`)입니다.
+
+```json
+{
+  "height": 170,
+  "weight": 65,
+  "weeklyGoalCount": 3,
+  "goal": "MUSCLE",
+  "bodyFatRate": null,
+  "muscleMass": null
+}
+```
+
+- 목표 변환: `DIET` → `WEIGHT_LOSS`, `MUSCLE` → `MUSCLE_GAIN`, `MAINTAIN` → `MAINTENANCE`.
+- 기본 운동 요일: 1회 수 / 2회 월·목 / 3회 월·수·금 / 4회 월·화·목·금 / 5회 월~금 / 6회 월~토 / 7회 매일. 횟수는 1~7만 허용합니다.
+- 선호 난이도는 2입니다. 실제 인바디 측정값이 있으면 기존 난이도 보정 규칙을 적용합니다.
+- `bodyFatRate` → `bodyFat`, `muscleMass` → `skeletalMuscleMass`. null 또는 생략한 측정값은 추천 모델의 미입력 기본값(-1)으로 처리하며, 미입력을 낮은 골격근량으로 판단하지 않습니다.
+- 성별은 수집하지 않으므로 추천 모델에는 null로 전달합니다. 기존 추천 로직의 여성 기준 세트·횟수가 적용됩니다. 성별에 따른 추천을 제공하려면 온보딩 입력과 요청 DTO 확장이 필요합니다.
+
 #사용 테이블 및 속성#
 
     -BodyInfo:
@@ -83,17 +104,17 @@
 
 -입력용 링크
     -루틴 생성:
-        -Postman 링크 : POST http://localhost:8080/api/routines/recommend-and-save
+        -Postman 링크 : POST http://localhost:8080/routines/recommend-and-save
     -루틴 조회:
-        -Postman 링크: GET http://localhost:8080/api/routines/recommend?userId={userID}
+        -Postman 링크: GET http://localhost:8080/routines/recommend?userId={userID}
     -로그 생성:
-        -Postman 링크: POST http://localhost:8080/api/workout-logs
+        -Postman 링크: POST http://localhost:8080/workout-logs
     -로그 삭제:
-        -Postman 링크: DELETE http://localhost:8080/api/workout-logs/101
+        -Postman 링크: DELETE http://localhost:8080/workout-logs/101
     -주간 대시보드 조회:
-        -Postman 링크: GET http://localhost:8080/api/workout-logs/weekly/{userID}
+        -Postman 링크: GET http://localhost:8080/workout-logs/weekly/{userID}
     -월간 대시보드 조회:
-        -Postman 링크: GET http://localhost:8080/api/workout-logs/monthly/{userID}
+        -Postman 링크: GET http://localhost:8080/workout-logs/monthly/{userID}
 
     -입력 양식 예시
         -1.필수 정보만:

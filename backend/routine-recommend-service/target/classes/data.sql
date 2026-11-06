@@ -1,35 +1,35 @@
--- ANAEROBIC (π´ªÍº“): 1000π¯¥Î
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1001, '∫•ƒ°«¡∑πΩ∫', 'ANAEROBIC', 'CHEST', 3);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1002, 'Ω∫ƒı∆Æ', 'ANAEROBIC', 'LEGS', 4);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1003, 'µ•µÂ∏Æ«¡∆Æ', 'ANAEROBIC', 'BACK', 4);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1004, 'ºÒ¥ı«¡∑πΩ∫', 'ANAEROBIC', 'SHOULDERS', 3);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1005, '¥˝∫ß ƒ√', 'ANAEROBIC', 'ARMS', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1006, '¿Œ≈¨∂Û¿Œ ∫•ƒ°«¡∑πΩ∫', 'ANAEROBIC', 'CHEST', 4);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1007, '∑π±◊ «¡∑πΩ∫', 'ANAEROBIC', 'LEGS', 3);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1008, '∑ø«Æ¥ŸøÓ', 'ANAEROBIC', 'BACK', 3);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1009, 'ªÁ¿ÃµÂ ∑π≈Õ∑≤ ∑π¿Ã¡Ó', 'ANAEROBIC', 'SHOULDERS', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1010, '∆Æ∂Û¿Ãº¡Ω∫ ¿ÕΩ∫≈Ÿº«', 'ANAEROBIC', 'ARMS', 2);
+-- ANAEROBIC (Î¨¥ÏÇ∞ÏÜå): 1000Î≤àÎåÄ
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1001, 'Î≤§ÏπòÌîÑÎ†àÏä§', 'ANAEROBIC', 'CHEST', 3);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1002, 'Ïä§ÏøºÌä∏', 'ANAEROBIC', 'LEGS', 4);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1003, 'Îç∞ÎìúÎ¶¨ÌîÑÌä∏', 'ANAEROBIC', 'BACK', 4);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1004, 'ÏàÑÎçîÌîÑÎ†àÏä§', 'ANAEROBIC', 'SHOULDERS', 3);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1005, 'Îç§Î≤® Ïª¨', 'ANAEROBIC', 'ARMS', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1006, 'Ïù∏ÌÅ¥ÎùºÏù∏ Î≤§ÏπòÌîÑÎ†àÏä§', 'ANAEROBIC', 'CHEST', 4);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1007, 'Î†àÍ∑∏ ÌîÑÎ†àÏä§', 'ANAEROBIC', 'LEGS', 3);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1008, 'Î†õÌíÄÎã§Ïö¥', 'ANAEROBIC', 'BACK', 3);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1009, 'ÏÇ¨Ïù¥Îìú Î†àÌÑ∞Îü¥ Î†àÏù¥Ï¶à', 'ANAEROBIC', 'SHOULDERS', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (1010, 'Ìä∏ÎùºÏù¥ÏÖâÏä§ ÏùµÏä§ÌÖêÏÖò', 'ANAEROBIC', 'ARMS', 2);
 
--- AEROBIC (¿ØªÍº“): 2000π¯¥Î
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2001, '∑Ø¥◊∏”Ω≈', 'AEROBIC', 'NONE', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2002, 'Ω«≥ª¿⁄¿¸∞≈', 'AEROBIC', 'NONE', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2003, '∫¸∏£∞‘ ∞»±‚', 'AEROBIC', 'NONE', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2004, '√µ±π¿« ∞Ë¥‹', 'AEROBIC', 'NONE', 4);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2005, '¡Ÿ≥—±‚', 'AEROBIC', 'NONE', 3);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2006, '¿œ∏≥∆ºƒ√', 'AEROBIC', 'NONE', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2007, 'πˆ«« ≈◊Ω∫∆Æ', 'AEROBIC', 'NONE', 4);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2008, '∏∂øÓ∆æ ≈¨∂Û¿Ã∏”', 'AEROBIC', 'NONE', 3);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2009, '¡∂±Î', 'AEROBIC', 'NONE', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2010, 'Ω∫≈‹π⁄Ω∫', 'AEROBIC', 'NONE', 2);
+-- AEROBIC (Ïú†ÏÇ∞ÏÜå): 2000Î≤àÎåÄ
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2001, 'Îü¨ÎãùÎ®∏Ïã†', 'AEROBIC', 'NONE', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2002, 'Ïã§ÎÇ¥ÏûêÏ†ÑÍ±∞', 'AEROBIC', 'NONE', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2003, 'Îπ†Î•¥Í≤å Í±∑Í∏∞', 'AEROBIC', 'NONE', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2004, 'Ï≤úÍµ≠Ïùò Í≥ÑÎã®', 'AEROBIC', 'NONE', 4);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2005, 'Ï§ÑÎÑòÍ∏∞', 'AEROBIC', 'NONE', 3);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2006, 'ÏùºÎ¶ΩÌã∞Ïª¨', 'AEROBIC', 'NONE', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2007, 'Î≤ÑÌîº ÌÖåÏä§Ìä∏', 'AEROBIC', 'NONE', 4);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2008, 'ÎßàÏö¥Ìã¥ ÌÅ¥ÎùºÏù¥Î®∏', 'AEROBIC', 'NONE', 3);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2009, 'Ï°∞ÍπÖ', 'AEROBIC', 'NONE', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (2010, 'Ïä§ÌÖùÎ∞ïÏä§', 'AEROBIC', 'NONE', 2);
 
--- STRETCHING (Ω∫∆Æ∑πƒ™): 3000π¯¥Î
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3001, '¿¸Ω≈ Ω∫∆Æ∑πƒ™', 'STRETCHING', 'NONE', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3002, '«œ√º Ω∫∆Æ∑πƒ™', 'STRETCHING', 'LEGS', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3003, '∞°Ωø Ω∫∆Æ∑πƒ™', 'STRETCHING', 'CHEST', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3004, 'µÓ Ω∫∆Æ∑πƒ™', 'STRETCHING', 'BACK', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3005, 'æÓ±˙ Ω∫∆Æ∑πƒ™', 'STRETCHING', 'SHOULDERS', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3006, '∆» Ω∫∆Æ∑πƒ™', 'STRETCHING', 'ARMS', 1);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3007, 'ø‰∞° ƒ⁄∫Í∂Û ¿⁄ºº', 'STRETCHING', 'BACK', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3008, '∑±¡ˆ Ω∫∆Æ∑πƒ™', 'STRETCHING', 'LEGS', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3009, '∆˚∑—∑Ø ∏∂ªÁ¡ˆ', 'STRETCHING', 'NONE', 2);
-INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3010, '∏Ò Ω∫∆Æ∑πƒ™', 'STRETCHING', 'NONE', 1);
+-- STRETCHING (Ïä§Ìä∏Î†àÏπ≠): 3000Î≤àÎåÄ
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3001, 'Ï†ÑÏã† Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'NONE', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3002, 'ÌïòÏ≤¥ Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'LEGS', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3003, 'Í∞ÄÏä¥ Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'CHEST', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3004, 'Îì± Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'BACK', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3005, 'Ïñ¥Íπ® Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'SHOULDERS', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3006, 'Ìåî Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'ARMS', 1);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3007, 'ÏöîÍ∞Ä ÏΩîÎ∏åÎùº ÏûêÏÑ∏', 'STRETCHING', 'BACK', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3008, 'Îü∞ÏßÄ Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'LEGS', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3009, 'ÌèºÎ°§Îü¨ ÎßàÏÇ¨ÏßÄ', 'STRETCHING', 'NONE', 2);
+INSERT INTO exercise (exercise_id, name, exercise_type, target_muscle_group, difficulty_level) VALUES (3010, 'Î™© Ïä§Ìä∏Î†àÏπ≠', 'STRETCHING', 'NONE', 1);
