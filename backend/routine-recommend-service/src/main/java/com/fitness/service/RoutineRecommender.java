@@ -38,8 +38,8 @@ public class RoutineRecommender {
         List<Exercise> aerobicExercises = new ArrayList<>();
         List<Exercise> stretchingExercises = new ArrayList<>();
         for (Exercise exercise : exerciseDatabase) {
-            if (bodyInfo.getBmi() > 25.0 && exercise.getDifficultyLevel() >= bodyInfo.getPreferredLevel()) {
-                continue; //BMI가 25 이상인 경우 고난이도 운동 제외
+            if (exercise.getDifficultyLevel() >= bodyInfo.getPreferredLevel() - 1 && exercise.getDifficultyLevel() <= bodyInfo.getPreferredLevel() + 1) {
+                continue;
             }
             if (exercise.getExerciseType() == ExerciseType.STRETCHING) {
                 stretchingExercises.add(exercise); //스트레칭 운동은 별도 리스트에 추가
@@ -128,9 +128,9 @@ public class RoutineRecommender {
         }
         if(difficultyDifference == 0){
             score += 40;
-        } else if(difficultyDifference == 1){
+        } else
             score += 20;
-        }
+
         return score;
     }
     public int calculateDifficulty(BodyInfo bodyInfo) { 

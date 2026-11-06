@@ -43,7 +43,7 @@ class BodyInfoApiServiceTest {
         assertThat(bodyInfo.getBmi()).isCloseTo(22.49, org.assertj.core.data.Offset.offset(0.01));
         assertThat(bodyInfo.getRecommendedWeight()).isEqualTo(26.0);
         assertThat(bodyInfo.getPreferredLevel()).isEqualTo(2);
-        assertThat(bodyInfo.getGender()).isNull();
+        assertThat(bodyInfo.getGender()).isEqualTo(Enums.Gender.FEMALE);
         assertThat(bodyInfo.getAvoidMuscleGroup()).isEqualTo(Enums.MuscleGroup.NONE);
     }
 
