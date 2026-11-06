@@ -56,6 +56,26 @@ public class BodyInfo {
         this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
         this.recommendedWeight = weight * 0.4;
     }
+    //일부 정보를 추가로 입력하는 생성자
+    public BodyInfo(long bodyID, long userID, double height, double weight, Enums.Gender gender, Enums.Goal goal, Enums.DayOfWeek[] weeklyWorkoutDays,int preferredLevel,Enums.MuscleGroup avoidMuscleGroup) {
+        //필수 정보 초기화
+        this.bodyID = bodyID;
+        this.userID = userID;
+        this.height = height;
+        this.weight = weight;
+        this.gender = gender;
+        this.goal = goal;
+        this.weeklyWorkoutDays = weeklyWorkoutDays != null ? weeklyWorkoutDays : new Enums.DayOfWeek[]{Enums.DayOfWeek.MONDAY, Enums.DayOfWeek.WEDNESDAY, Enums.DayOfWeek.FRIDAY};
+        this.preferredLevel = preferredLevel;
+        this.avoidMuscleGroup = (avoidMuscleGroup != null ? avoidMuscleGroup : Enums.MuscleGroup.NONE);
+        
+        //선택 사항 기본값 설정
+        this.bodyFat = -1.0;
+        this.skeletalMuscleMass = -1.0;
+        //BMI 계산
+        this.bmi = (height > 0) ? weight / Math.pow(height / 100.0, 2) : -1.0;
+        this.recommendedWeight = weight * 0.4;
+    }
     //모든 정보를 입력하는 생성자
     public BodyInfo(long bodyID, long userID, double height, double weight, Enums.Gender gender, Enums.Goal goal, Enums.DayOfWeek[] weeklyWorkoutDays, int preferredLevel, double bodyFat, double skeletalMuscleMass, Enums.MuscleGroup avoidMuscleGroup) {
         this.bodyID = bodyID;

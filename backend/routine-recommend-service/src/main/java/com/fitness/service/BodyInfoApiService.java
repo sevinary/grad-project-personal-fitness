@@ -3,6 +3,7 @@ package com.fitness.service;
 import com.fitness.dto.BodyInfoRequest;
 import com.fitness.exception.AppException;
 import com.fitness.model.BodyInfo;
+import com.fitness.model.Enums;
 import com.fitness.model.Enums.DayOfWeek;
 import com.fitness.model.Enums.Goal;
 import com.fitness.model.UserBodyInfo;
@@ -34,6 +35,7 @@ public class BodyInfoApiService {
         }
 
         UserBodyInfo info = new UserBodyInfo();
+
         info.setUserId(userId);
         info.setHeight(request.getHeight());
         info.setWeight(request.getWeight());
@@ -43,10 +45,15 @@ public class BodyInfoApiService {
         info.setWeeklyGoalCount(request.getWeeklyGoalCount());
         info.setCreatedAt(LocalDateTime.now());
         info.setUpdatedAt(LocalDateTime.now());
+        info.setGender(request.getGender()!=null? request.getGender() : Enums.Gender.FEMALE);
+        info.setPreferredLevel(request.getPreferredLevel()!=null? request.getPreferredLevel() : 2);
+        info.setAvoidMuscleGroup(request.getAvoidMuscleGroup()!=null? request.getAvoidMuscleGroup() : Enums.MuscleGroup.NONE);
 
         info = userBodyInfoRepository.save(info);
+
         BodyInfo routineBodyInfo = toRoutineBodyInfo(info);
         routineSave.saveOrUpdateRoutine(routineRecommender.generateRoutine(routineBodyInfo));
+        
         return toResult(info);
     }
 
@@ -57,7 +64,7 @@ public class BodyInfoApiService {
             case MAINTAIN -> Goal.MAINTENANCE;
         };
         BodyInfo bodyInfo = new BodyInfo(0, info.getUserId(), info.getHeight(), info.getWeight(),
-                null, goal, defaultWorkoutDays(info.getWeeklyGoalCount()));
+                info.getGender(), goal, defaultWorkoutDays(info.getWeeklyGoalCount()), info.getPreferredLevel(), info.getAvoidMuscleGroup());
         // Missing InBody measurements retain BodyInfo's -1 (unknown) defaults.
         if (info.getBodyFatRate() != null) {
             bodyInfo.setBodyFat(info.getBodyFatRate());
@@ -70,15 +77,33 @@ public class BodyInfoApiService {
 
     private DayOfWeek[] defaultWorkoutDays(int weeklyGoalCount) {
         return switch (weeklyGoalCount) {
-            case 1 -> new DayOfWeek[]{DayOfWeek.WEDNESDAY};
-            case 2 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.THURSDAY};
-            case 3 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY};
-            case 4 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
-                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY};
-            case 5 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY};
-            case 6 -> new DayOfWeek[]{DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
+            case 1 -> new DayOfWeek[]{
+                DayOfWeek.WEDNESDAY};
+            case 2 -> new DayOfWeek[]{
+                DayOfWeek.MONDAY, 
+                DayOfWeek.THURSDAY};
+            case 3 -> new DayOfWeek[]{
+                DayOfWeek.MONDAY, 
+                DayOfWeek.WEDNESDAY, 
+                DayOfWeek.FRIDAY};
+            case 4 -> new DayOfWeek[]{
+                DayOfWeek.MONDAY, 
+                DayOfWeek.TUESDAY,
+                DayOfWeek.THURSDAY, 
+                DayOfWeek.FRIDAY};
+            case 5 -> new DayOfWeek[]{
+                DayOfWeek.MONDAY, 
+                DayOfWeek.TUESDAY, 
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY, 
+                DayOfWeek.FRIDAY};
+            case 6 -> new DayOfWeek[]{
+                DayOfWeek.MONDAY, 
+                DayOfWeek.TUESDAY, 
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY, 
+                DayOfWeek.FRIDAY, 
+                DayOfWeek.SATURDAY};
             case 7 -> DayOfWeek.values();
             default -> throw AppException.badRequest("주당 운동 횟수는 1~7회여야 합니다.");
         };
@@ -88,12 +113,15 @@ public class BodyInfoApiService {
         return new BodyInfoResult(
                 info.getBodyInfoId(),
                 info.getUserId(),
+                info.getGender(),
                 info.getHeight(),
                 info.getWeight(),
                 info.getBodyFatRate(),
                 info.getMuscleMass(),
                 info.getGoal().name(),
+                info.getPreferredLevel(),
                 info.getWeeklyGoalCount(),
+                info.getAvoidMuscleGroup(),
                 info.hasInbody(),
                 info.getCreatedAt()
         );
@@ -103,26 +131,32 @@ public class BodyInfoApiService {
     public static class BodyInfoResult {
         private final Long bodyInfoId;
         private final Long userId;
+        private final Enums.Gender gender;
         private final Float height;
         private final Float weight;
         private final Float bodyFatRate;
         private final Float muscleMass;
         private final String goal;
+        private final Integer preferredLevel;
         private final Integer weeklyGoalCount;
+        private final Enums.MuscleGroup avoidMuscleGroup;
         private final boolean hasInbody;
         private final LocalDateTime createdAt;
 
-        public BodyInfoResult(Long bodyInfoId, Long userId, Float height, Float weight,
-                              Float bodyFatRate, Float muscleMass, String goal,
-                              Integer weeklyGoalCount, boolean hasInbody, LocalDateTime createdAt) {
+        public BodyInfoResult(Long bodyInfoId, Long userId, Enums.Gender gender, Float height, Float weight,
+                              Float bodyFatRate, Float muscleMass, String goal, Integer preferredLevel,
+                              Integer weeklyGoalCount, Enums.MuscleGroup avoidMuscleGroup, boolean hasInbody, LocalDateTime createdAt) {
             this.bodyInfoId = bodyInfoId;
             this.userId = userId;
+            this.gender = gender;
             this.height = height;
             this.weight = weight;
             this.bodyFatRate = bodyFatRate;
             this.muscleMass = muscleMass;
             this.goal = goal;
+            this.preferredLevel = preferredLevel;
             this.weeklyGoalCount = weeklyGoalCount;
+            this.avoidMuscleGroup = avoidMuscleGroup;
             this.hasInbody = hasInbody;
             this.createdAt = createdAt;
         }

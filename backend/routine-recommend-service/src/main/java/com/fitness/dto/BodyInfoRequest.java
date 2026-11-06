@@ -6,10 +6,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import com.fitness.model.Enums;
 
 @Getter
 @Setter
 public class BodyInfoRequest {
+
+    
+    private Enums.Gender gender;
 
     @NotNull
     private Float height;
@@ -24,8 +28,14 @@ public class BodyInfoRequest {
     @NotNull
     private WorkoutGoal goal;
 
+    @Min(1)
+    @Max(5)
+    private Integer preferredLevel;
+
     @NotNull
     @Min(1)
     @Max(7)
     private Integer weeklyGoalCount;
+
+    private Enums.MuscleGroup avoidMuscleGroup;
 }
